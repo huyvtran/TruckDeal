@@ -1,0 +1,39 @@
+<ion-view view-title=" Truck Details" ng-init="initialize()" ng-controller="viewtruckController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-edit" ng-click="approve()" ng-show="show_approve()">Approve</button>
+  <button class="button button-large icon ion-chevron-left " ng-click="back()" ng-show="show_back()">Back</button>
+  <button class="button button-large icon ion-edit " ng-click="edit()" ng-show="show_edit()">Edit</button>
+</ion-nav-buttons>
+  <ion-content>
+	<div style="height: 300px; width: 100%;">
+		<img src="{{truck.picture1}}" style="height: 100%; width: 100%;">
+	</div>
+	<div class="list card">
+	     	<ion-list>
+		      	<ion-item class="item-icon-right">
+				    <h2>{{truck.make}} {{truck.model}}</h2>
+				    <h2>Registration Number:{{truck.registration_number}}</h2>
+				    <p> 
+				    	<i class="icon ion-android-bus"></i></ion-item >
+				    	<strong>Type: <strong>{{truck.type}}</strong></br> <strong>Status:<strong> {{truck.status}}</p>
+		    	</ion-item >
+	     	<ion-list>
+		</div>
+	 <div class="list card">
+	     	<ion-list>
+		      	<ion-item class="item-icon-right"><i class="icon ion-navicon-round"></i>
+		      		<p><strong>Load Height: </strong>{{truck.load_height}} ft </br>
+		      		<strong>Load Width: </strong>{{truck.load_width}} ft </br>
+		      		<strong>Load Length: </strong>{{truck.load_length}} ft </br>
+		      		<strong>Capacity: </strong>{{truck.capacity}} kg </p>
+		      	</ion-item >
+			    <ion-item ng-show="truck.picture2">
+			         <img class="full-image" src="{{truck.picture2}}"></br>
+			         <img class="full-image" src="{{truck.picture3}}">
+			    </ion-item>
+	     	<ion-list>
+	  </div>
+
+  </ion-content>
+  <ion-footer-bar class="bar-assertive "></ion-footer-bar>
+</ion-view>

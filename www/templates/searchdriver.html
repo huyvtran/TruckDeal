@@ -1,0 +1,38 @@
+<ion-view view-title="Driver List" ng-init="initialize()" ng-controller="searchdriverController as controller">
+  <ion-nav-buttons side="right">
+      <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="post()">Post Trip</button>
+  </ion-nav-buttons>
+  <ion-content>
+    <div class="list card" ng-show="nomatch()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! We didn't find a match. </br>You can still post your trip using the <br>post trip option.
+      </div>
+    </div>
+    <ion-list >
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="driver in drivers" type="item-text-wrap" ng-click="clickedriver(driver.id)">
+        <img ng-src="{{driver.picture}}">
+        <h3>{{driver.source}}</h3>
+        <h3>{{driver.destination}}</h3>
+        <p>
+          <i class="icon ion-chevron-right icon-accessory"></i>
+          <strong>Start Date & Time : </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+          <strong>End Date & Time : </strong>{{driver.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+          <strong>Status : </strong>{{driver.status}}
+        </p>
+     </ion-item>
+    </ion-list>
+    <div class="tabs tabs-assertive" style="height:auto;">
+        <div class="col list card">
+          <div class="item item-avatar">
+            <img src="{{summary.picture}}">
+            <h2>Trip Summary</h2>
+            <h3>From : {{summary.senderraddr}}</h4>
+            <h3>To : {{summary.receiveraddr}}</h4>
+            <h4> Pickup Time : {{summary.pickdatetime| date: "yyyy-MM-dd h:mm a"}}</h4>
+            <h4> Drop Time : {{summary.droptimedate| date: "yyyy-MM-dd h:mm a"}}</h4>
+          </div>
+        </div>
+    </div>
+  </ion-content>
+</ion-view>

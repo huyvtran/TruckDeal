@@ -1,0 +1,23 @@
+<ion-view view-title="Past Trips" ng-init="initialize()" ng-controller="pasttripController as controller">
+  <ion-content>
+    <div class="list card" ng-show="notrips()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! No trips available.
+      </div>
+    </div>
+    <ion-list >
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="trip in trips" type="item-text-wrap" ng-click="clickecustomer(trip.id)">
+        <img ng-src="{{trip.picture}}">
+        <h3>{{trip.source}}</h3>
+        <h3>{{trip.destination}}</h3>
+        <p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+          <strong>Start Date & Time : </strong>{{trip.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+          <strong>End Date & Time : </strong>{{trip.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+          <strong>Status : </strong>{{trip.status}}
+        </p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

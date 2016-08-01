@@ -1,0 +1,62 @@
+<ion-view view-title="Edit Profile" ng-init="initialize()" ng-controller="editdriverprofileController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-ios-checkmark-outline " ng-click="save()">Save</button>
+</ion-nav-buttons> 
+  <ion-content>
+    <div class="padding">
+      <div class="list card">
+        <div class="item item-icon-left" >
+          <i class="icon ion-person"></i>
+            <span>First Name: {{user.first_name}} </span>
+            <!--<input type="text" ng-model="user.first_name" class="stable" placeholder="Enter First Name" id="first_name">-->
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-person"></i>
+	          <input type="text" ng-model="user.last_name" class="stable" placeholder="Enter Last Name" id="last_name">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-email"></i>
+            <input type="text" ng-model="user.email" class="stable" placeholder="Enter Email Id" id="email">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-telephone"></i>
+          <span>Mobile Number: {{user.mobile_number}} </span>
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-home"></i>
+	          <input type="text" ng-model="user.address_line1" class="stable" placeholder="#Door No / Apt / Street" id="address_line1">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-location"></i>
+	          <input type="text" ng-model="user.address_line2" class="stable" placeholder="Landmark (optional)" id="address_line2">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-map"></i>
+            <input type="text" ng-model="user.city" class="stable" placeholder="Enter City" id="city">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-flag"></i>
+            <input type="text" ng-model="user.state" class="stable" placeholder="Enter State" id="state">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-ios-barcode-outline"></i>
+            <input type="number" ng-model="user.postal_code" class="stable" placeholder="Enter Postal Code" id="postal_code">
+        </div>
+        <div class="item item-icon-left" > <!--ion-datetime-picker ng-model="user.dob">-->
+          <i class="icon ion-calendar"></i>
+              <!--Date of Birth: {{user.dob| date: "yyyy-MM-dd "}}-->
+          <span>Date of Birth: {{user.dob| date: "yyyy-MM-dd "}} </span>
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-card"></i>
+              <!--<input ng-model="user.driving_license" type="text" placeholder="Driving license No">-->
+          <span>Driving license No: {{user.driving_license}} </span>
+        </div>
+        <!--<div class="item item-icon-left" >
+              <input ng-model="user.dl_picture" type="file" placeholder="Upload Driving License">
+        </div>-->
+      </div>
+    </div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive "></ion-footer-bar>
+</ion-view>

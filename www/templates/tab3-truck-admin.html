@@ -1,0 +1,22 @@
+<ion-view view-title="Truck List" ng-init="initialize()" ng-controller="truck-adminController as controller">
+  <ion-content>
+    <div class="list card" ng-show="notrucks()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! No trucks available.
+      </div>
+    </div>
+    <ion-list >
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="truck in trucks" type="item-text-wrap" ng-click="clickedtruck(truck.id)">
+        <img ng-src="{{truck.picture1}}">
+        <h3>{{truck.make}} {{truck.model}}</h3>
+        <h3>{{truck.type}}</h3>
+        <p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+          <strong>Registration Number : </strong>{{truck.registration_number}}</br>
+          <strong>Status : </strong>{{truck.status}}
+        </p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

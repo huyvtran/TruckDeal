@@ -1,0 +1,74 @@
+<ion-view view-title="Driver Profile" ng-init="initialize()" ng-controller="driver-admindetailController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-checkmark " ng-click="approve()" ng-show="show_approve()">Approve</button>
+  <button class="button button-large icon ion-chevron-left " ng-click="back()" ng-show="!show_approve()">Back</button>
+</ion-nav-buttons> 
+  <ion-content>
+      <section id="profileBanner">
+        <div class="profileAvatar">
+          <img ng-show="user.picture !== undefined" ng-src="{{user.picture}}"/>
+        </div>
+      </section>
+      
+      <section id="content" class="list card">
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-ios-telephone"></i>
+          <span class="profilLabel">Mobile Number:</span>
+          <span>{{user.mobile_number}} </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-person"></i>
+          <span class="profilLabel ">First name:</span>
+          <span>{{user.first_name}} </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-person"></i>
+          <span class="profilLabel">Last name:</span>
+          <span>{{user.last_name}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-email"></i>
+          <span class="profilLabel">E-mail:</span>
+          <span>{{user.email}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left" ng-click="rating()">
+          <i class="icon ion-person-stalker"></i>
+          <span class="profilLabel">Total Ratings & Comments</span>
+          <span>
+            <div class = "row">
+               <div class = "col"><div class="item item-text-wrap item-icon-left"><i class="icon ion-star"></i>{{user.no_of_rating}}</div></div>
+               <div class = "col"><div class="item item-text-wrap item-icon-left"><i class="icon ion-document-text"></i>{{user.no_of_comment}}</div></div>
+            </div>
+          </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-calendar"></i>
+          <span class="profilLabel">Date of Birth:</span>
+          <span>{{user.dob | date: "yyyy-MM-dd "}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-android-map"></i>
+          <span class="profilLabel">Address:</span>
+          <span>{{user.address_line1}} {{user.address_line2}} {{user.state}} {{user.postal_code}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-card"></i>
+          <span class="profilLabel">Driving License No:</span>
+          <span>{{user.driving_license}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <img ng-show="user.dl_picture !== undefined" ng-src="{{user.dl_picture}}"/>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-ribbon-b"></i>
+          <span class="profilLabel">Completed Trips:</span>
+          <span>{{user.no_of_ship}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-android-bus"></i>
+          <span class="profilLabel">Registered Trucks:</span>
+          <span>{{user.no_of_trucks}}</span>
+        </div>
+      </section>
+  </ion-content>
+</ion-view>

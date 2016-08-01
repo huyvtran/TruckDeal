@@ -1,0 +1,101 @@
+<ion-view view-title="Trip Details" ng-init="initialize()" ng-controller="tripdetailsController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-arrow-right-a " ng-click="save()"></button>
+</ion-nav-buttons> 
+  <ion-content>
+    <div class="padding">
+      <h4>Sender Information:</h4>
+      <div class="list card">
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-person"></i>
+	          <input type="text" ng-model="newtrip.sendername" class="stable" placeholder="Sender's Full Name" id="sendername">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-telephone"></i>
+	          <input type="number" ng-model="newtrip.sendernumber" class="stable" placeholder="Mobile Number" id="sendernumber">
+        </div>
+      	<div class="item item-icon-left" ion-datetime-picker ng-model="newtrip.pickdatetime" >
+    	  	<i class="icon ion-clock"></i>
+	          Pick up Date & Time:   <strong> {{newtrip.pickdatetime| date: "yyyy-MM-dd h:mm a"}}</strong>
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-home"></i>
+	          <input type="text" ng-model="newtrip.senderaddrline1" class="stable" placeholder="#Door No / Apt / Street" id="senderaddrline1">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-location"></i>
+	          <input type="text" ng-model="newtrip.senderaddrline2" class="stable" placeholder="Landmark (optional)" id="senderaddrline1">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-map"></i>
+	          {{newtrip.senderraddr}}
+        </div>
+      	<!--<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-map"></i>
+	          <input type="text" ng-model="newtrip.sendercity" class="stable" placeholder="City / Town" id="sendercity">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-globe"></i>
+	          <input type="text" ng-model="newtrip.senderstate" class="stable" placeholder="State" id="senderstate">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-arrow-shrink"></i>
+	          <input type="number" ng-model="newtrip.senderpostalcode" class="stable" placeholder="Postal Code" id="senderpostalcode">
+        </div>-->
+      </div>
+      <h4>Receiver Information:</h4>
+		<ul class="list">
+		<li class="item item-checkbox">
+		   Sender as Receiver.
+		   <label class="checkbox">
+		   <input type="checkbox" ng-click="updatereceiver()" checked="Checked" ng-model="newtrip1.checked">
+		   </label>
+		</li>
+		</ul>
+      <div class="list card">
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-person"></i>
+	          <input type="text" ng-model="newtrip1.receivername" class="stable" placeholder="Receiver's Full Name" id="receivername">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-telephone"></i>
+	          <input type="number" ng-model="newtrip1.receivernumber" class="stable" placeholder="Mobile Number" id="receivernumber">
+        </div>
+      	<div class="item item-icon-left" ion-datetime-picker ng-model="newtrip.droptimedate" >
+    	  	<i class="icon ion-clock"></i>
+	          Drop Date & Time:   <strong> {{newtrip.droptimedate| date: "yyyy-MM-dd h:mm a"}}</strong>
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-home"></i>
+	          <input type="text" ng-model="newtrip.receiveraddrline1" class="stable" placeholder="#Door No / Apt / Street" id="receiveraddrline1">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-location"></i>
+	          <input type="text" ng-model="newtrip.receiveraddrline2" class="stable" placeholder="Landmark (optional)" id="receiveraddrline2">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-map"></i>
+	          {{newtrip.receiveraddr}}
+        </div>
+      	<!--<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-map"></i>
+	          <input type="text" ng-model="newtrip.receivercity" class="stable" placeholder="City / Town" id="receivercity">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-android-globe"></i>
+	          <input type="text" ng-model="newtrip.receiverrstate" class="stable" placeholder="State" id="receiverrstate">
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-arrow-shrink"></i>
+	          <input type="number" ng-model="newtrip.receiverpostalcode" class="stable" placeholder="Postal Code" id="receiverpostalcode">
+        </div>-->
+      </div>
+
+
+      <!--<button class="button button-block button-positive" id="addameetup_button" style="position: fixed; bottom: 40px; width: 95%">
+        Add a meetup 
+      </button>-->
+    </div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive "></ion-footer-bar>
+</ion-view>

@@ -1,0 +1,69 @@
+<ion-view view-title="Select Customer" ng-init="initialize()" ng-controller="selectcustomerController as controller">
+  <ion-nav-buttons side="right">
+      <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="confirm()" ng-show="customermode()"> Confirm</button>
+      <button class="button icon-left button-large ion-android-bus" ng-click="driverdetail(0)" ng-show="show_driver_info()"> Driver Details</button>
+      <button class="button button-large icon ion-close-circled " ng-click="cancel_trip()" ng-show="show_cancel_trip()">Cancel Trip</button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="left">
+      <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="rate_driver(0)" ng-show="show_rating()"> Rate Driver</button>
+  </ion-nav-buttons>
+  <ion-content>
+	<div id="map3" data-tap-disabled="true" style="height: 200px; width: 100%;"></div>
+	<div class="list card">
+	  <div class="item item-avatar">
+	    <img src="{{customer.profile_pic}}">
+	    <h2>{{customer.name}}</h2>
+	    <p><strong>Status : </strong>{{customer.status}}</p>
+	  </div>
+
+	  <div class="list card">
+	     	<ion-list>
+		      	<ion-item class="item-icon-right item-text-wrap">
+					<h2>{{customer.source}} </br>-- To -- {{customer.destination}} </h2>
+				    <p>
+				      <i class="icon ion-map"></i></ion-item >
+				      <strong>Start Date & Time : </strong>{{customer.pickdatetime| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>End Date & Time : </strong>{{customer.droptimedate| date: "yyyy-MM-dd h:mm a"}}</br>
+				    </p>
+		    	</ion-item >
+		      	<ion-item class="item-icon-right item-text-wrap" ng-show="display_add()">
+					<h2>Sender Details </h2>
+				    <p>
+				      <i class="icon ion-person-add"></i></ion-item >
+				      {{customer.sendername}}</br>
+				      {{customer.sendernumber}}</br>
+				      {{customer.sender_complete_address}}
+				    </p>
+		    	</ion-item >
+		      	<ion-item class="item-icon-right item-text-wrap" ng-show="display_add()">
+					<h2>Receiver Details </h2>
+				    <p>
+				      <i class="icon ion-person-add"></i></ion-item >
+				      {{customer.receivername}}</br>
+				      {{customer.receivernumber}}</br>
+				      {{customer.receiver_complete_address}}
+				    </p>
+		    	</ion-item >
+		      	<ion-item class="item-icon-right item-text-wrap">
+					<h2>Goods Details </h2>
+				    <p>
+				      <i class="icon ion-social-buffer"></i></ion-item >
+				      Type: {{customer.goodstype}}</br>
+				      Weight: {{customer.goodsweight}} Kg</br>
+				      Expected Cost: Rs.{{customer.cost}}</br>
+				      Instructions: {{customer.comments}}
+				    </p>
+		    	</ion-item >
+
+			    <ion-item class="row">
+			         <img class="full-image" src="{{customer.picture}}">
+			    </ion-item>
+	     	<ion-list>
+	  </div>
+	</div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive tabs ">
+    <button class="button button-clear icon ion-android-checkmark-circle" ng-click="respond()" ng-show="show_response()"> Confirm Trip</button>
+  </ion-footer-bar>
+</ion-view>
+

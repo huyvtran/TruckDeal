@@ -1,0 +1,29 @@
+<ion-view view-title="Goods Details" ng-init="initialize()" ng-controller="drivergoodsdetailsController as controller">
+  <ion-content>
+    <div class="padding">
+      <h4>Goods Information:</h4>
+      <div class="list card">
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-cube"></i>
+	          <input type="number" ng-model="newgoods.available_capacity" class="stable" placeholder="Available load area in Kg" id="available_capacity">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-cash"></i>
+            <input type="number" ng-model="newgoods.cost" class="stable" placeholder="Expected cost" id="cost">
+        </div>
+        <h4>Comments:</h4>
+        <label class="item item-input">
+          <textarea placeholder="Type your comments here (Any exception of goods)" ng-model="newgoods.comments" id="comments" rows="6" cols="20" style="width: 100%"></textarea>
+        </label>
+        </div>
+        <div class="item item-icon-left " >
+          <button class="button button-icon icon ion-camera"  ng-click="takePicture()"> <input type="text" class="stable" placeholder="Available Load Area" id="picture"></button>
+            <img ng-show="newgoods.picture !== undefined" ng-src="{{newgoods.picture}}"/></br>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive tabs " >
+    <button class="button button-clear icon ion-android-search" ng-click="save(newgoods)">Search Customers</button>
+  </ion-footer-bar>
+</ion-view>

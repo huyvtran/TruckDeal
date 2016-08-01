@@ -1,0 +1,46 @@
+<ion-view view-title=" Rate Trip" ng-init="initialize()" ng-controller="selectdriverController as controller">
+  <ion-nav-buttons side="right">
+      <button class="button button-large icon ion-close-circled " ng-click="submit()">Submit</button>
+  </ion-nav-buttons>
+  <ion-content>
+		<div id="map4" data-tap-disabled="true" style="height: 200px; width: 100%;"></div>
+	<div class="list card">
+	  	<h3>Rating:</h3>
+	    <ionic-ratings ratingsobj='ratingsObject'></ionic-ratings> <span id="rating_no"> {{driver.rating}} </span></br>
+        <h3>Comments:</h3>
+        <label class="item item-input">
+          <textarea placeholder="Type your comments here" ng-model="driver.comments" id="comments" rows="3" cols="20" style="width: 100%"></textarea></br>
+        </label>
+	</div>
+	<div class="list card">
+	  <div class="item item-avatar">
+	    <img src="{{driver.profile_pic}}">
+	    <h3>{{driver.name}}</h3>
+	    <p> Age :{{driver.age}} </br>Staus: {{driver.status}}</p>
+	    <!--<p>
+	      <i class="icon ion-android-star"></i> {{driver.no_of_rating}} ratings
+	      <i class="icon ion-ios-paper"></i> {{driver.no_of_comment}} Comments
+	      <i class="icon ion-ribbon-a"></i> {{driver.no_of_ship}} Shipments Completed
+	    </p>-->
+	  </div>
+
+	  <div class="list card">
+	     	<ion-list>
+	     	<h3> Trip Summary </h3>
+		      	<ion-item class="item-icon-right item-text-wrap ">
+					<h3>{{driver.source}} -- to -- {{driver.destination}} </h3>
+				    <p>
+				      <i class="icon ion-map"></i></ion-item >
+				      <strong>Start Date & Time : </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>End Date & Time : </strong>{{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>Distance Covered : </strong>{{driver.distance}} Km</br>
+				    </p>
+		    	</ion-item >
+		      	<ion-item class="item-icon-right"><i class="icon ion-android-bus"></i>{{driver.make}} {{driver.model}} {{driver.type}}</br><span>{{driver.registration_number}}</br></span></ion-item >
+	     	<ion-list>
+	  </div>
+	</div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive tabs ">
+  </ion-footer-bar>
+</ion-view>

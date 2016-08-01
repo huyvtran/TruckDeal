@@ -1,0 +1,16 @@
+<ion-view view-title="Registration Pending" ng-init="initialize()" ng-controller="driverpendingController as controller">
+  <ion-content>
+    <div class="list card" ng-show="profpending()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! Your Profile verification is pending. We shall have it verified at the earliest.
+      </div>
+    </div>
+    <div class="list card" ng-show="truckpending()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! You have no trucks linked to your profile or your truck verification is pending. If your are a first time user, please add trucks using My Trucks -> Add Truck. 
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

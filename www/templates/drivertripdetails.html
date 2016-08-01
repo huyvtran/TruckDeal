@@ -1,0 +1,75 @@
+<ion-view view-title="Trip Details" ng-init="initialize()" ng-controller="drivertripdetailsController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-arrow-right-a " ng-click="save()"></button>
+</ion-nav-buttons> 
+  <ion-content>
+    <div class="padding">
+      <h4>Driver Information:</h4>
+      <div class="list card">
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-person"></i>
+          Name : {{driver.name}}
+        </div>
+      	<div class="item item-icon-left" >
+    	  	<i class="icon ion-ios-telephone"></i>
+          Mobile Number : {{driver.mobile_number}}
+        </div>
+      </div>
+      <h4>Select Truck:</h4>
+      <div class="list card" ng-click="selecttruck()">
+        <div class="item item-icon-left" >
+          <i class="icon ion-android-bus"></i>
+           {{driver.truck}}
+        </div>
+    </div>
+      <h4>Trip Information:</h4>
+      <div class="list card">
+        <div class="item item-icon-left" >
+          <i class="icon ion-android-map"></i>
+            Source :{{driver.source}}
+        </div>
+      	<div class="item item-icon-left" ion-datetime-picker ng-model="driver.start_date_time" >
+    	  	<i class="icon ion-clock"></i>
+	          Start Date & Time:   <strong> {{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</strong>
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-android-map"></i>
+            Destination :{{driver.destination}}
+        </div>
+        <div class="item item-icon-left" ion-datetime-picker ng-model="driver.end_date_time" >
+          <i class="icon ion-clock"></i>
+            End Date & Time:   <strong> {{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</strong>
+        </div>
+    </div>
+  </ion-content>
+  <!--<ion-footer-bar class="bar-assertive "></ion-footer-bar>-->
+</ion-view>
+
+<script id="modal3.html" type="text/ng-template" >
+      <ion-modal-view >
+        <ion-header-bar class="bar-assertive bar-header bar-positive">
+          <h1 class="title">Truck List</h1>
+          <button class="button button-clear button-primary" ng-click="modal.hide()">Back</button>
+        </ion-header-bar>
+        <ion-content>
+          <div class="list card" ng-show="notrucks()">
+            <div class="item item-icon-left">
+              <i class="icon ion-alert-circled"></i>
+              Oops! No trucks available.
+            </div>
+          </div>
+          <ion-list >
+            <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="truck in trucks" type="item-text-wrap" ng-click="clickedtruck(truck.id)">
+              <img ng-src="{{truck.picture1}}">
+              <h3>{{truck.make}} {{truck.model}}</h3>
+              <h3>{{truck.type}}</h3>
+              <p>
+              <i class="icon ion-chevron-right icon-accessory"></i>
+                <strong>Registration Number : </strong>{{truck.registration_number}}</br>
+                <strong>Status : </strong>{{truck.status}}
+              </p>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-modal-view>
+    </script>

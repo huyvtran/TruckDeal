@@ -1,0 +1,8 @@
+{
+  "name": "TruckDeal",
+  "app_id": "b3068a2a",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ]
+}

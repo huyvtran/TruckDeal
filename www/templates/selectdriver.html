@@ -1,0 +1,61 @@
+<ion-view view-title="Select Driver" ng-init="initialize()" ng-controller="selectdriverController as controller">
+  <ion-nav-buttons side="right">
+      <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="confirm()" ng-show="drivermode()"> Confirm</button>
+      <button class="button icon-left button-large ion-android-bus" ng-click="customerdetail(0)" ng-show="show_customer_info()"> Customer Details</button>
+      <button class="button button-large icon ion-close-circled " ng-click="cancel_trip()" ng-show="show_cancel_trip()">Cancel Trip</button>
+  </ion-nav-buttons>
+  <ion-content>
+	<div id="map2" data-tap-disabled="true" style="height: 200px; width: 100%;"></div>
+	<div class="list card">
+	  <div class="item item-avatar">
+	    <img src="{{driver.profile_pic}}">
+	    <h2>{{driver.name}}</h2>
+	    <p> Age :{{driver.age}}</p>
+	    <p ng-show="display_add()"> Phone :{{driver.mobile_number}}</p>
+	    <p ng-click="rating()">
+	      <i class="icon ion-android-star"></i> {{driver.no_of_rating}} ratings
+	      <i class="icon ion-ios-paper"></i> {{driver.no_of_comment}} Comments
+	      <i class="icon ion-ribbon-a"></i> {{driver.no_of_ship}} Shipments Completed
+	    </p>
+	  </div>
+
+	  <div class="list card">
+	     	<ion-list>
+		      	<ion-item class="item-icon-right item-text-wrap">
+					<h2>{{driver.source}} -- to -- {{driver.destination}} </h2>
+				    <p>
+				      <i class="icon ion-map"></i></ion-item >
+				      <strong>Start Date & Time : </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>End Date & Time : </strong>{{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>Staus: </strong>{{driver.status}}
+				    </p>
+		    	</ion-item >
+		      	<ion-item class="item-icon-right"><i class="icon ion-android-bus"></i>{{driver.make}} {{driver.model}} {{driver.type}}</br><span ng-show="display_add()">{{driver.registration_number}}</br></span>Available Capacity: {{driver.available_capacity}}Kg</br>Expected Cost: Rs.{{driver.cost}}</ion-item >
+		      	<ion-item class="item-icon-right"><i class="icon ion-android-contacts"></i>Comments: {{driver.comments}}</ion-item >
+
+			    <ion-item ng-show="driver.load_pic !== undefined">
+			         <img class="full-image" src="{{driver.load_pic}}">
+			    </ion-item>
+			    <ion-item ng-show="driver.picture1 !== undefined">
+			         <img class="full-image" src="{{driver.picture1}}">
+			    </ion-item>
+				<ion-item ng-show="driver.picture2 !== undefined">
+			         <img class="full-image"  src="{{driver.picture2}}">
+			    </ion-item>
+				<ion-itemng-show="driver.picture3 !== undefined">
+			         <img class="full-image" src="{{driver.picture3}}">
+			    </ion-item>
+	     	<ion-list>
+	  </div>
+	</div>
+  </ion-content>
+  <ion-footer-bar class="bar-assertive tabs " ng-show="show_response()">
+    <button class="button button-clear icon ion-android-checkmark-circle" ng-click="respond()" ng-show="show_response()"> Confirm Trip</button>
+  </ion-footer-bar>
+  <ion-footer-bar class="bar-assertive tabs " ng-show="show_start()">
+    <button class="button button-clear icon ion-flag" ng-click="start()" ng-show="show_start()"> Start Trip</button>
+  </ion-footer-bar>
+  <ion-footer-bar class="bar-assertive tabs " ng-show="show_complete()">
+    <button class="button button-clear icon ion-checkmark-circled" ng-click="complete()" ng-show="show_complete()"> Complete Trip</button>
+  </ion-footer-bar>
+</ion-view>

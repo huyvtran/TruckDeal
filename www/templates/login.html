@@ -1,0 +1,92 @@
+<ion-view view-title="Login" hide-nav-bar="true" class="stable-bg" ng-init="init()" >
+  <ion-content class="login-pg-bg">
+    <div class="padding text-center">
+      <h1>
+        <img class="login_logo" ng-src="img/logo.png">
+      </h1>
+      <p class="stable">We are near you ....</p>
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
+        <input type="number" ng-model="currentUser.mobilenumber" placeholder="Mobile Number">
+      </label>
+      <label class="item item-input">
+        <input type="password" ng-model="currentUser.password" placeholder="Password">
+      </label>
+    </div>
+    <div class="padding row">
+      <div class="col ">
+      <center><input type="checkbox" ng-click="signedin(currentUser)" checked="Checked" ng-model="ischecked" />
+        <span class="stable">Keep me Signed</span></center>
+      </div>
+    </div>
+
+    <div class="padding">
+      <button class="button button-block button-royal" ng-click="login_user(currentUser)">
+        Login
+      </button>
+    </div>
+    <div class="padding row">
+      <div class="col">
+        <span class="stable">Forgot password?</span>
+      </div>
+      <div class="col">
+      <!--<a ui-sref="register" class="stable" >New here? Sign up</a>-->
+      <a ng-click="openModal()"class="stable" >New here? Sign up</a>
+      
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
+
+    <script id="modal.html" type="text/ng-template">
+      <ion-modal-view class="login-pg-bg">
+        <ion-header-bar class="bar-assertive bar-header bar-positive">
+          <h1 class="title">Sign Up</h1>
+          <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
+        </ion-header-bar>
+        <ion-content class="padding">
+          <div class="padding text-center">
+            <h1>
+              <img class="login_logo" ng-src="img/logo.png">
+            </h1>
+            <p class="stable">We are near you ....</p>
+          </div>
+          <ion-toggle ng-model="isdriver" ng-click="drivermode()"> {{newUser.driver}}</ion-toggle>
+          <div class="list">
+            <label class="item item-input">
+              <input ng-model="newUser.firstName" type="text" placeholder="First Name">
+            </label>
+            <label class="item item-input">
+              <input ng-model="newUser.lastName" type="text" placeholder="Last Name">
+            </label>
+            <label class="item item-input">
+              <input ng-model="newUser.mobilenumber" type="number" placeholder="Mobile Number">
+            </label>
+            <label class="item item-input">
+              <input ng-model="newUser.email" type="email" placeholder="Email Id">
+            </label>
+            <label class="item item-input">
+              <input ng-model="newUser.password" type="password" placeholder="Password">
+            </label>
+            <span ng-show="showdriver()">
+            <label class="item item-input" ion-datetime-picker ng-model="newUser.dob">
+              Date of Birth: {{newUser.dob| date: "yyyy-MM-dd "}}
+            </label>
+            <label class="item item-input">
+              <input ng-model="newUser.driving_license" type="text" placeholder="Driving license No">
+            </label>
+            <div class="item item-icon-left" >
+              <button class="button button-icon icon ion-camera" ng-click="takePicture()"> <input type="text" placeholder="Upload Driving license" id="picture"></button>
+              <img ng-show="newUser.dl_picture !== undefined" ng-src="{{newUser.dl_picture}}"/>
+            </div>
+            </span>
+            <button class="button button-full button-royal" ng-click="signup(newUser)">Create</button>
+          </div>
+        </ion-content>
+      </ion-modal-view>
+    </script>
+
+
+
+

@@ -1,0 +1,55 @@
+<ion-view view-title="Edit Truck" ng-init="initialize()" ng-controller="edittruckController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-checkmark-circled " ng-click="save()">   Save</button>
+</ion-nav-buttons>
+  <ion-content>
+    <div class="padding">
+      <div class="list card">
+       <div class="item item-icon-left" >
+          <i class="icon ion-android-bus"></i>
+            <input type="text" ng-model="truck.make" class="stable" placeholder="Enter Make" id="make">
+        </div>
+       <div class="item item-icon-left" >
+          <i class="icon ion-model-s"></i>
+            <input type="text" ng-model="truck.model" class="stable" placeholder="Enter Model" id="model">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-gear-b"></i>
+            <input type="text" ng-model="truck.type" class="stable" placeholder="Enter Type" id="type">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-card"></i>
+            <input type="text" ng-model="truck.registration_number" class="stable" placeholder="Registration Number" id="registration_number">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-code"></i>
+            <input type="number" ng-model="truck.load_height" class="stable" placeholder="Load Height (ft)" id="load_height">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-code-download"></i>
+            <input type="number" ng-model="truck.load_width" class="stable" placeholder="Load Width (ft)" id="load_width">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-code-working"></i>
+            <input type="number" ng-model="truck.load_length" class="stable" placeholder="Load Length (ft)" id="load_length">
+        </div>
+        <div class="item item-icon-left" >
+          <i class="icon ion-android-contract"></i>
+            <input type="number" ng-model="truck.capacity" class="stable" placeholder="Load capacity (Kg)" id="capacity">
+        </div>
+        <div class="item item-icon-left" >
+          <button class="button button-icon icon ion-camera"  ng-click="takePicture1()"> <input type="text" class="stable" placeholder="Upload Front Picture" id="picture"></button>
+          <img ng-show="truck.picture1 !== undefined" ng-src="{{truck.picture1}}"/>
+        </div>
+        <div class="item item-icon-left" >
+          <button class="button button-icon icon ion-camera"  ng-click="takePicture2()"> <input type="text" class="stable" placeholder="Upload registration documents" id="picture"></button>
+          <img ng-show="truck.picture2 !== undefined" ng-src="{{truck.picture2}}"/>
+        </div>
+        <div class="item item-icon-left" >
+          <button class="button button-icon icon ion-camera"  ng-click="takePicture3()"> <input type="text" class="stable" placeholder="Upload Load Area Picture" id="picture"></button>
+          <img ng-show="truck.picture3 !== undefined" ng-src="{{truck.picture3}}"/>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

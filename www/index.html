@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="google-signin-client_id" content="AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es.apps.googleusercontent.com">
+    <title></title>
+
+
+    <!-- compiled css output -->
+    <link href="css/ionic.app.css" rel="stylesheet">
+
+
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
+<!-- <script src="cordova.js"></script> -->
+
+    <!-- google maps javascript -->
+    <!--<script src="//maps.googleapis.com/maps/api/js?key=AIzaSyCGxb3f2_2563bUvZ2X3cbp0dydM5CN8pA&amp;sensor=true"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>-->
+    <!--<script src="http://maps.google.com/maps/api/js?key=AIzaSyCGxb3f2_2563bUvZ2X3cbp0dydM5CN8pA&sensor=true"></script>-->
+    <!--<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>-->
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCGxb3f2_2563bUvZ2X3cbp0dydM5CN8pA&amp;sensor=false&amp;libraries=places"></script>
+
+    <!-- data picker js -->
+    <script src="lib/ion-datetime-picker/release/ion-datetime-picker.min.js"></script>
+    <link href="lib/ion-datetime-picker/release/ion-datetime-picker.min.css" rel="stylesheet">
+
+    <!-- rating js -->
+    <script src="lib/ionic-ratings/dist/ionic-ratings.js"></script>
+
+
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+
+    <!-- include controller -->
+    <script src="js/controllers.js"></script>
+
+    <!-- include services -->
+    <script src="js/services.js"></script>
+
+    <!-- include Parse DB -->
+    <script src="js/parse-1.6.14.js"></script>
+
+    <!-- include FireBase-->
+    <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+
+    <!-- include reference to DB-->
+    <script src="js/firebaseRef.js"></script>
+
+  <!-- include jQuery-->
+  <script src="js/jquery-1.12.3.min.js"></script>
+
+  <!-- include cloudflare-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angularFire/1.2.0/angularfire.min.js"></script>
+
+    <!-- pull up js -->
+    <!--<script src="lib/ionic-pullup/src/ion-pullup.js"></script>-->
+
+
+
+
+
+  </head>
+  <body ng-app="starter">
+
+    <ion-side-menus ng-controller="SideMenuController" ng-init="initialize()" class="bar-assertive">
+      <!-- Center content -->
+      <ion-side-menu-content>
+        <ion-nav-bar class="bar-assertive" align-title="center">
+          <ion-nav-back-button class="button-clear" side="right">
+            Back
+          </ion-nav-back-button>
+
+          <ion-nav-buttons side="left">
+            <button class="button button-icon button-clear ion-navicon" menu-toggle="left" ng-click="open_menu()">
+            </button>
+          </ion-nav-buttons>
+        <!--  <ion-nav-buttons side="right">
+            <button class="button icon-right button-clear ion-ios-location" ui-sref="checkIn">
+            </button>
+          </ion-nav-buttons>
+          <ion-nav-buttons side="right">
+            <button class="button button-icon button-clear ion-android-more-vertical" menu-toggle="right">
+            </button>
+          </ion-nav-buttons>-->
+        </ion-nav-bar>
+
+        <ion-nav-view animation="slide-left-right"></ion-nav-view>
+      </ion-side-menu-content>
+
+      <!-- Left menu -->
+      <ion-side-menu side="left" class="stable-bg">
+        <ion-content>
+
+          <!--<ion-header-bar class="bar bar-header item-input-inset dark-bg">
+            <label class="item-input-wrapper">
+              <i class="icon ion-ios-search placeholder-icon"></i>
+              <input type="search" placeholder="Search">
+            </label>
+          </ion-header-bar> -->
+
+          <div class="text-center">
+            <div class="list text-center stable-list">
+                <a><!-- ui-sref="account">-->
+                  <img class="profile-picture" menu-close="" ng-src="{{profile_picture}}">
+                  <h4>{{user_name}} </h4>
+                  {{profile}}
+                </a>
+            </div>
+            <div class="list text-left stable-list">
+              <div class="item item-icon-left" menu-close="" ng-click="go_home()">
+                <i class="icon ion-ios-home"></i>
+                Home
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="tab1.inprogresstrip" ng-show="showcustprof()">
+                <i class="icon ion-clipboard"></i>
+                My Trips
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="tab2.driverinprogresstrip" ng-show="showdriverprof()">
+                <i class="icon ion-clipboard"></i>
+                My Trips
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="custprofile" ng-show="showcustprof()">
+                <i class="icon ion-person"></i>
+                Profile
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="driverprofile" ng-show="showdriverprof()">
+                <i class="icon ion-person"></i>
+                Driver Profile
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="trucks" ng-show="showdriverprof()">
+                <i class="icon ion-android-bus"></i>
+                My Trucks
+              </div>
+              <!--<div class="item item-icon-left" menu-close="" ui-sref="settings">
+                <i class="icon ion-ios-gear"></i>
+                Settings
+              </div>
+              <div class="item item-icon-left" menu-close="" ui-sref="about">
+                <i class="icon ion-information-circled"></i>
+                About
+              </div>-->
+              <a class="item item-icon-left" menu-close="" ng-click="logout()">
+                <i class="icon ion-log-out"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+
+        </ion-content>
+
+      </ion-side-menu>
+
+    </ion-side-menus>
+  </body>
+</html>

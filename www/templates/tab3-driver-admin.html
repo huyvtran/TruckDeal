@@ -1,0 +1,19 @@
+<ion-view view-title="Driver List" ng-init="initialize()" ng-controller="driver-adminController as controller">
+  <ion-content>
+    <div class="list card" ng-show="nodrivers()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! No Drivers registered.
+      </div>
+    </div>
+    <ion-list >
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="driver in drivers" type="item-text-wrap" ng-click="clickedriver(driver.id)">
+        <img ng-src="{{driver.picture}}">
+        <h3>User Name : {{driver.mobile_number}}</h3>
+        <h3>{{driver.first_name}} {{driver.last_name}}</h3>
+        <h3>{{driver.driving_license}}</h3>
+        <p>Registration Status : {{driver.approval}}</p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

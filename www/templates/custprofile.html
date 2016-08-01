@@ -1,0 +1,41 @@
+<ion-view view-title="Profile" ng-init="initialize()" ng-controller="custprofileController as controller">
+<ion-nav-buttons side="right">
+  <button class="button button-large icon ion-edit" ng-click="edit()">Edit</button>
+</ion-nav-buttons>
+  <ion-content>
+      <section id="profileBanner">
+        <div class="profileAvatar">
+          <img ng-show="user.picture !== undefined" ng-src="{{user.picture}}"/>
+        </div>
+        <button class="button button-icon icon ion-camera" ng-click="takePicture()"> upload</button>
+      </section>
+      
+      <section id="content" class="list card">
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-ios-telephone"></i>
+          <span class="profilLabel">Mobile Number:</span>
+          <span>{{user.mobile_number}} </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-person"></i>
+          <span class="profilLabel ">First name:</span>
+          <span>{{user.first_name}} </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-person"></i>
+          <span class="profilLabel">Last name:</span>
+          <span>{{user.last_name}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-email"></i>
+          <span class="profilLabel">E-mail:</span>
+          <span>{{user.email}}</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-android-map"></i>
+          <span class="profilLabel">Address:</span>
+          <span>{{user.addline1}} {{user.addline2}} {{user.state}} {{user.postal_code}}</span>
+        </div>
+      </section>
+  </ion-content>
+</ion-view>

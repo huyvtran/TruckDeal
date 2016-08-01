@@ -1,0 +1,22 @@
+<ion-view view-title="Driver Rating" ng-init="initialize()" ng-controller="driverratingController as controller">
+  <ion-content>
+    <div class="list card" ng-show="norating()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! There are no current ratings and comments.
+      </div>
+    </div>
+    <ion-list >
+      <div class="card" ng-repeat="driver in drivers" ng-click="clickedriver(driver.id)">
+        <div class= "item item-divider item-text-wrap">
+        <h3>Customer Name : {{driver.cust_name}}</h3>
+        <h3>Rated on : {{driver.createdAt | date: "yyyy-MM-dd "}}</h3>
+        <p>
+          <ionic-ratings ratingsobj='driver.ratingsObject'></ionic-ratings></br> </br>
+          <strong>Comments : </strong>{{driver.comments}}</br>
+        </p>
+        </div>
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>

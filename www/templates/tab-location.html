@@ -1,0 +1,98 @@
+<ion-view view-title="SET ROUTE" ng-init="init()">
+  <--<ion-nav-buttons side="right">
+      <button class="button icon-left button-large ion-android-add" ng-click="addtripdetails()">Add Details</button>
+  </ion-nav-buttons>
+  <ion-content>
+    <div class="item item-input  " id="from_box" style="width:100%;" >
+      <i class="icon ion-search placeholder-icon"></i>
+      <input id="pac-input-from" class ="pac-input-class" type="text" placeholder="Enter From Location" data-tap-disabled="true" ng-change='disableTap_from()' ng-model="search_from"> 
+    </div>
+    <div class="item item-input  " id="to_box" style="width:100%;" >
+      <i class="icon ion-search placeholder-icon"></i>
+      <input id="pac-input-to" class ="pac-input-class" type="text" placeholder="Enter To Location" data-tap-disabled="true" ng-change='disableTap_to()' ng-model="search_to"> 
+    </div>
+    <div id="map" data-tap-disabled="true"></div>
+    <!--<div style="width:100%">
+      <button class="button button-dark" ng-click="displayAll()" style="width:17%; min-height: 35px; height: 38px; font-size: 13px;">
+        All
+      </button>
+    </div>
+
+    <ion-list>
+
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="place in places_to_show" type="item-text-wrap" ng-click="click({{place.id}})">
+        <img ng-src="img/{{place.type}}.png">
+        <h2>{{place.name}}</h2>
+        <p>{{place.addr}}</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+
+    </ion-list> -->
+  </ion-content>
+  <ion-footer-bar class="bar-assertive tabs "  ng-show="custmode()">
+    <button class="button button-clear icon ion-ios-list-outline" ng-click="openModal()" ng-show="custmode()"> View Driver List</button>
+  </ion-footer-bar>
+  <ion-footer-bar class="bar-assertive tabs "  ng-show="!custmode()">
+    <button class="button button-clear icon ion-ios-list-outline" ng-click="openModal2()" ng-show="!custmode()"> View Customer List</button>
+  </ion-footer-bar>
+</ion-view>
+
+    <script id="modal1.html" type="text/ng-template" >
+      <ion-modal-view >
+        <ion-header-bar class="bar-assertive bar-header bar-positive">
+          <h1 class="title">List of Drivers</h1>
+          <button class="button button-clear button-primary" ng-click="modal.hide()">Back</button>
+        </ion-header-bar>
+        <ion-content>
+          <div class="list card" ng-show="nodriver()">
+            <div class="item item-icon-left">
+              <i class="icon ion-alert-circled"></i>
+              Oops! No drivers Nearby.
+            </div>
+          </div>
+          <ion-list >
+            <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="driver in drivers" type="item-text-wrap" ng-click="clickedriver(driver.id)">
+              <img ng-src="{{driver.picture}}">
+              <h3>{{driver.source}}</h3>
+              <h3>{{driver.destination}}</h3>
+              <p>
+              <i class="icon ion-chevron-right icon-accessory"></i>
+                <strong>Start Date & Time : </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+                <strong>End Date & Time : </strong>{{driver.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+                <strong>Status : </strong>{{driver.status}}
+              </p>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-modal-view>
+    </script>
+
+    <script id="modal2.html" type="text/ng-template" >
+      <ion-modal-view >
+        <ion-header-bar class="bar-assertive bar-header bar-positive">
+          <h1 class="title">List of Customers</h1>
+          <button class="button button-clear button-primary" ng-click="modal2.hide()">Back</button>
+        </ion-header-bar>
+        <ion-content>
+          <div class="list card" ng-show="nocustomer()">
+            <div class="item item-icon-left">
+              <i class="icon ion-alert-circled"></i>
+              Oops! No Customers Nearby.
+            </div>
+          </div>
+          <ion-list >
+            <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="customer in customers" type="item-text-wrap" ng-click="clickecustomer(customer.id)">
+              <img ng-src="{{customer.picture}}">
+              <h3>{{customer.source}}</h3>
+              <h3>{{customer.destination}}</h3>
+              <p>
+              <i class="icon ion-chevron-right icon-accessory"></i>
+                <strong>Start Date & Time : </strong>{{customer.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+                <strong>End Date & Time : </strong>{{customer.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+                <strong>Status : </strong>{{customer.status}}
+              </p>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-modal-view>
+    </script>
