@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','ngCordova','ion-datetime-picker','ionic-ratings'])
+angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','ngCordova','ion-datetime-picker','ionic-ratings','ionic.service.core', 'ionic.service.push'])
 
 .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -17,14 +17,15 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
         StatusBar.styleLightContent();
     }
 
-    var push = new Ionic.Push({
-      "debug": true
+    /*var push = new Ionic.Push({
+      "debug": false
     });
  
     push.register(function(token) {
-      console.log("My Device token:",token.token);
+      alert("My Device token:",token.token);
       push.saveToken(token);  // persist the token in the Ionic Platform
-    });
+    });*/
+
 
   });
 })

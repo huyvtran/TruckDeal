@@ -97,7 +97,7 @@ angular.module('starter.controllers', ['firebase'])
 
 //*************************** start of LoginCtrl ****************************
 
-.controller('LoginCtrl', function($scope, $ionicModal, $state, $rootScope, $ionicPopup, $timeout, route_screen,$cordovaCamera,$cordovaToast) {
+.controller('LoginCtrl', function($scope, $ionicModal, $state, $rootScope, $ionicPopup, $timeout, route_screen,$cordovaCamera,$cordovaToast,$ionicPush) {
 
   var self=this;
   var dl_file;
@@ -167,11 +167,13 @@ angular.module('starter.controllers', ['firebase'])
             $scope.signedin(currentUser);
         }
         if(user.get("group")=="customer"){
+            $scope.initpush();
             route_screen.set_login_prof(1);
             route_screen.get_cust_info();
             $state.go('tab.location');
           }
         else if(user.get("group")=="driver"){
+            $scope.initpush();
             route_screen.set_login_prof(2);
             route_screen.get_driver_info().then(function(results) {
                 driver_info = results;
@@ -190,6 +192,7 @@ angular.module('starter.controllers', ['firebase'])
             });
         }
         else if(user.get("group")=="admin"){
+            $scope.initpush();
             route_screen.set_login_prof(3);
             route_screen.get_cust_info();
             $state.go('tab3.driver-admin');
@@ -202,6 +205,37 @@ angular.module('starter.controllers', ['firebase'])
       }
     });  
   };
+
+
+  $scope.initpush = function()
+  {
+    $ionicPush.init({
+      "debug": false,
+      "onNotification": function(notification) {
+        var payload = notification.payload;
+        alert(notification.text);
+      },
+      "onRegister": function(data) {
+        alert(data.token);
+        route_screen.set_device_id(data.token);
+        //console.log("The stored device id is " + route_screen.get_device_id());
+      },
+      "pluginConfig": {
+        "ios": {
+          "badge": true,
+          "sound": true
+         },
+         "android": {
+           //"iconColor": "#343434",
+           //"icon": "img/logo.png"
+         }
+      }
+    });
+
+    $ionicPush.register();
+
+  };
+
 
   $scope.signup = function(newUser)
   {
@@ -290,6 +324,7 @@ angular.module('starter.controllers', ['firebase'])
     p1.set("first_name",newUser.firstName);
     p1.set("last_name",newUser.lastName);
     p1.set("mobile_number",newUser.mobilenumber.toString());
+    p1.set("pend_rating",0);
 
     p1.save(null,{
     success:function(obj){
@@ -559,7 +594,7 @@ angular.module('starter.controllers', ['firebase'])
 //*************************** end of driver-adminController ****************************
 
 //*************************** start of driver-admindetailController ****************************
-.controller('driver-admindetailController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup) {
+.controller('driver-admindetailController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup,$http) {
 
   var driver_info;
   var clicked_item;
@@ -624,6 +659,11 @@ angular.module('starter.controllers', ['firebase'])
           success: function(results) {
               results[0].set("approval","Approved");
               results[0].save();
+              var mobile_number = driver_info[clicked_item].mobile_number;
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your profile is approved.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $state.go("tab3.driver-admin");
             },
           error: function(error) {
@@ -631,6 +671,20 @@ angular.module('starter.controllers', ['firebase'])
           }
         });
   };
+
+  $scope.test_pusf_notif = function(deviceid,msg) {
+
+      var req = route_screen.test_pusf_notif(deviceid,msg);
+      // Make the API call
+      $http(req).success(function(resp){
+        // Handle success
+        console.log("Ionic Push: Push success");
+      }).error(function(error){
+        // Handle error 
+        console.log("Ionic Push: Push error");
+      });
+
+   };
 
   $scope.initialize = function() 
   {
@@ -1358,8 +1412,7 @@ angular.module('starter.controllers', ['firebase'])
 //*************************** start of addtruckController ****************************
 .controller('addtruckController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup,$cordovaCamera,$cordovaToast) {
 
-  var cust_info;
-  var cust_trip_info;
+  var driver_info;
   var pict1_file , pict2_file, pict3_file;
   $scope.$on('$ionicView.enter', function(ev) {
     if(ev.targetScope !== $scope)
@@ -1443,6 +1496,9 @@ angular.module('starter.controllers', ['firebase'])
 
   $scope.save_after_valid = function()
   {
+      var currentuser = Parse.User.current();
+      var mobile_number = currentuser.get("username");
+
       //console.log($scope.truck.make);
       //console.log($scope.truck.load_width);
       var new_truck_class = Parse.Object.extend("Trucks");
@@ -1456,6 +1512,7 @@ angular.module('starter.controllers', ['firebase'])
       t1.set("load_length",$scope.truck.load_length);
       t1.set("capacity",$scope.truck.capacity);
       t1.set("status","Registration Pending");
+      t1.set("driver_username",mobile_number);
 
       acl=new Parse.ACL(Parse.User.current());
       acl.setReadAccess(Parse.User.current(),true);
@@ -1943,7 +2000,7 @@ angular.module('starter.controllers', ['firebase'])
 //*************************** end of edittruckController ****************************
 
 //*************************** start of viewtruckController ****************************
-.controller('viewtruckController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup) {
+.controller('viewtruckController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup,$http) {
 
   var cust_info;
   var cust_trip_info;
@@ -2035,13 +2092,32 @@ angular.module('starter.controllers', ['firebase'])
           success: function(results) {
               results[0].set("status","Approved");
               results[0].save();
+              var mobile_number = results[0].get("driver_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your Truck is approved.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $state.go("tab3.truck-admin");
             },
           error: function(error) {
               console.log(" The object was not retrieved successfully.");
           }
         });
-  };
+  }
+
+$scope.test_pusf_notif = function(deviceid,msg) {
+
+      var req = route_screen.test_pusf_notif(deviceid,msg);
+      // Make the API call
+      $http(req).success(function(resp){
+        // Handle success
+        console.log("Ionic Push: Push success");
+      }).error(function(error){
+        // Handle error 
+        console.log("Ionic Push: Push error");
+      });
+
+   };
 
   $scope.initialize = function() 
   {
@@ -3968,7 +4044,7 @@ $scope.submit = function()
 //*************************** end of driverupcomingtripController ****************************
 
 //*************************** start of selectdriverController ****************************
-.controller('selectdriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup) {
+.controller('selectdriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup,$http) {
 
 
   var driver_trip_info;
@@ -4337,6 +4413,11 @@ $scope.confirm = function()
               driver_trip_list.save();
               driver_trip_info.set("status","Please Respond");
               driver_trip_info.save();
+              var mobile_number = driver_trip_list.get("driver_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "A customer is interested in your trip.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Requested - Great!',
                   content: 'You will soon be contacted by the driver.'
@@ -4439,6 +4520,11 @@ $scope.confirm = function()
               cust_trip_info.save();
               driver_trip_list.save();
               driver_trip_info.save();
+              var mobile_number = cust_trip_list.get("customer_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your shippment is confirmed by trucker.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Confirmed - Great!',
                   content: 'Your trip is confirmed and customer is notified.'
@@ -4472,6 +4558,11 @@ $scope.confirm = function()
               cust_trip_info.save();
               driver_trip_list.save();
               driver_trip_info.save();
+              var mobile_number = cust_trip_list.get("customer_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your shippment is picked by trucker.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Started - Great!',
                   content: 'Your trip is started and customer is notified.'
@@ -4505,6 +4596,15 @@ $scope.confirm = function()
               cust_trip_info.save();
               driver_trip_list.save();
               driver_trip_info.save();
+              var mobile_number = cust_trip_list.get("customer_username");
+              var cust_info = route_screen.get_cust_info_match(mobile_number);
+              var pend_rating_hold = cust_info.get("pend_rating");
+              cust_info.set("pend_rating",pend_rating_hold+1);
+              cust_info.save();
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your shippment is delivered by trucker.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Completed - Great!',
                   content: 'Your trip is completed and customer is notified.'
@@ -4539,6 +4639,11 @@ $scope.confirm = function()
               driver_trip_info = driver_trip_list.get("driver_trip");
               driver_trip_info.set("status","Posted");
               driver_trip_info.save();
+              var mobile_number = cust_trip_list.get("customer_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Your shippment is declined by trucker.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Cancelled!',
                   content: 'You will shortly be contacted by another interested driver.'
@@ -4563,6 +4668,20 @@ $scope.confirm = function()
         }).then(function(res) {
              $state.go('tab.location');
         });
+   };
+
+$scope.test_pusf_notif = function(deviceid,msg) {
+
+      var req = route_screen.test_pusf_notif(deviceid,msg);
+      // Make the API call
+      $http(req).success(function(resp){
+        // Handle success
+        console.log("Ionic Push: Push success");
+      }).error(function(error){
+        // Handle error 
+        console.log("Ionic Push: Push error");
+      });
+
    };
 
 
@@ -4830,7 +4949,7 @@ $scope.confirm = function()
 //*************************** end of customer upcomingtripController ****************************
 
 //*************************** start of selectcustomerController ****************************
-.controller('selectcustomerController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup,$ionicModal) {
+.controller('selectcustomerController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup,$ionicModal,$http) {
 
   var cust_trip_info;
   var cust_trip_list;
@@ -5177,6 +5296,11 @@ $scope.confirm = function()
                   cust_trip_list.save();
                   cust_trip_info.set("status","Please Respond");
                   cust_trip_info.save();
+                  var mobile_number = cust_trip_list.get("customer_username");
+                  route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                      var msg = "A trucker is interested to ship your goods.";
+                      $scope.test_pusf_notif(deviceid,msg);
+                    });
                   $ionicPopup.alert({
                       title: 'Posted - Great!',
                       content: 'You will be contacted soon by the customer.'
@@ -5225,7 +5349,7 @@ $scope.confirm = function()
       });
   };
 
-  $scope.rate_driver = function() 
+  $scope.rate_driver_dummy = function() 
   {
       var confirmPopup = $ionicPopup.confirm({
           //title: 'Do you want to cancel the trip? ',
@@ -5261,6 +5385,11 @@ $scope.confirm = function()
               driver_trip_info = driver_trip_list.get("driver_trip");
               driver_trip_info.set("status","Confirmed");
               driver_trip_info.save();
+              var mobile_number = driver_trip_list.get("driver_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Customer has accepted your request.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Confirmed - Great!',
                   content: 'Your trip is confirmed and driver is notified.'
@@ -5295,6 +5424,11 @@ $scope.confirm = function()
               driver_trip_info = driver_trip_list.get("driver_trip");
               driver_trip_info.set("status","Posted");
               driver_trip_info.save();
+              var mobile_number = driver_trip_list.get("driver_username");
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Customer has declined your request.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                });
               $ionicPopup.alert({
                   title: 'Cancelled!',
                   content: 'You will shortly be contacted by another interested driver.'
@@ -5331,6 +5465,9 @@ $scope.confirm = function()
               driver_trip_info = results1;
               //console.log(driver_trip_list[0].get("driver_username"));
               var mobile_number = driver_trip_list[0].get("driver_username");
+              /*route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  $scope.test_pusf_notif(deviceid);
+                });*/
               route_screen.get_driver_info_match(mobile_number).then(function(results2){
                   driver_info=results2;
                   route_screen.override_driver_info(driver_info);
@@ -5347,7 +5484,19 @@ $scope.confirm = function()
         });
   };
 
+$scope.test_pusf_notif = function(deviceid,msg) {
 
+      var req = route_screen.test_pusf_notif(deviceid,msg);
+      // Make the API call
+      $http(req).success(function(resp){
+        // Handle success
+        console.log("Ionic Push: Push success");
+      }).error(function(error){
+        // Handle error 
+        console.log("Ionic Push: Push error");
+      });
+
+   };
 
 })
 

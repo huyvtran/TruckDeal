@@ -1,7 +1,7 @@
 angular.module('starter.services', [])
 
 
-.factory('route_screen',['$q', function($q,$localStorage) {
+.factory('route_screen',['$q', function($q,$localStorage,$http) {
 
   var chats = [{
     id: 1,
@@ -75,6 +75,7 @@ angular.module('starter.services', [])
     face: 'img/truck.ico'
   }];
 
+	var deviceid; // This holds the device id for push notification.
 	var loginprof=1; // loginprof = 1 logined as customer , loginprof = 2 logined as driver , loginprof = 3 logined as admin
 	var currentuser , currentcustomer, location;
 	var driver_prof_stat = 1;// driver_prof_stat = 1 for approval pending , driver_prof_stat = 2 for approved.
@@ -129,6 +130,36 @@ angular.module('starter.services', [])
 		    getlocal: function() {
 		        var records = JSON.parse(localStorage.getItem('login')); 
 		        return records;
+		    },
+
+		    set_device_id: function(id) {
+		    	deviceid = id;
+		      	currentuser = Parse.User.current();
+		      	currentuser.set('deviceid',deviceid);
+		      	currentuser.save();
+		    },
+
+		    get_device_id_match: function(mobile_number) { 
+			    // define the function as a promise function
+			    var deferred = $q.defer();
+				var user_info_class = Parse.Object.extend("User");
+			    var query = new Parse.Query(user_info_class);
+			    query.equalTo("username", mobile_number);
+			    query.find({
+			        success: function(results) {
+			        	//console.log(results);
+	                	deferred.resolve(results[0].get("deviceid"));    
+			        },
+			        error: function(object, error) {
+			          console.log(" The object was not retrieved successfully.");
+			          deferred.reject();
+			        }
+			     });
+			    return deferred.promise;
+		    },
+
+		    get_device_id: function() {
+		    	return deviceid;
 		    },
 
 		    set_login_prof: function(prof) {
@@ -410,6 +441,7 @@ angular.module('starter.services', [])
 							city:results.get('city'),
 							state:results.get('state'),
 							postal_code:results.get('postal_code'),
+							pend_rating:results.get('pend_rating'),
 							picture:pict_temp
 						};
 						if(!cust_info.picture){
@@ -462,6 +494,7 @@ angular.module('starter.services', [])
 							addline2:results.get('addline2'),
 							city:results.get('city'),
 							state:results.get('state'),
+							pend_rating:results.get('pend_rating'),
 							postal_code:results.get('postal_code'),
 							picture:pict_temp
 						};
@@ -703,6 +736,7 @@ angular.module('starter.services', [])
 									//picture3:results[i].get('picture3'),
 									picture3:pict3_temp,
 									status:results[i].get('status'),
+									driver_username:results[i].get('driver_username'),
 									object_id:results[i].id
 								};
 								trucks_info.push(trucks_info_temp);
@@ -764,6 +798,7 @@ angular.module('starter.services', [])
 									//picture3:results[i].get('picture3'),
 									picture3:pict3_temp,
 									status:results[i].get('status'),
+									driver_username:results[i].get('driver_username'),
 									object_id:results[i].id
 								};
 								trucks_info.push(trucks_info_temp);
@@ -831,6 +866,7 @@ angular.module('starter.services', [])
 									//picture3:results.get('picture3'),
 									picture3:pict3_temp,
 									status:results.get('status'),
+									driver_username:results.get('driver_username'),
 									object_id:results.id
 								};
 								trucks_info = trucks_info_temp;
@@ -1330,7 +1366,58 @@ angular.module('starter.services', [])
 	               	}
 			    //deferred.resolve(cust_trip_info[i]);
 			    return deferred.promise;
-	    	}
+	    	},
+
+			test_pusf_notif: function(deviceid,msg,title) {
+
+			      // Define relevant info
+			      var jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyZjI3MDc3Yy00MDYxLTRlOWMtOGI0ZC0zNmE3OTY1ZDUzNTQifQ.zUg4IxvJoVVQLK_LxRLn3iaMcvdE-LZECymyCUC3VOY';
+			      var tokens = [];
+			      var profile = 'sendurr';
+
+			      // Build the request object
+			      tokens.push(deviceid);
+			      var req = {
+			        method: 'POST',
+			        url: 'https://api.ionic.io/push/notifications',
+			        headers: {
+			          'Content-Type': 'application/json',
+			          'Authorization': 'Bearer ' + jwt
+			        },
+			        data: {
+			          "tokens": tokens,
+			          "profile": profile,
+			          "notification": {
+			            //"title": "Hi",
+			            //"message": "Hello world!",
+			            "android": {
+			              //"title": "Hey",
+			              "message": msg,
+			              //"image": "https://images-na.ssl-images-amazon.com/images/I/71dttusOQyL.png"
+			               "image": "http://files.softicons.com/download/internet-icons/social-trucks-icons-by-cutelittlefactory.com/png/128/Social-Truck_stumblupon.png"
+			            },
+			            "ios": {
+			              //"title": "Howdy",
+			              "message": msg
+			            }
+			          }
+			        }
+			      };
+			      return req;
+			      // Make the API call
+			      /*$http(req).success(function(resp){
+			        // Handle success
+			        //console.log("Ionic Push: Push success", resp);
+			        console.log("Push notification successfully");
+			        deferred.resolve();
+			      }).error(function(error){
+			        // Handle error 
+			        //console.log("Ionic Push: Push error", error);
+			        console.log("Push notification failed");
+			        deferred.reject();
+			      });*/
+
+			   }
 
 
 

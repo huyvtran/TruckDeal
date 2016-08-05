@@ -16,8 +16,9 @@
           <textarea placeholder="Type your comments here (Any exception of goods)" ng-model="newgoods.comments" id="comments" rows="6" cols="20" style="width: 100%"></textarea>
         </label>
         </div>
-        <div class="item item-icon-left " >
-          <button class="button button-icon icon ion-camera"  ng-click="takePicture()"> <input type="text" class="stable" placeholder="Available Load Area" id="picture"></button>
+        <div class="item item-icon-left" ng-click="takePicture()">
+          <i class="icon ion-camera"></i>
+          <input type="text" class="stable" placeholder="Available Load Area" id="picture">
             <img ng-show="newgoods.picture !== undefined" ng-src="{{newgoods.picture}}"/></br>
         </div>
       </div>
