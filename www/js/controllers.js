@@ -26,6 +26,7 @@ angular.module('starter.controllers', ['firebase'])
           $scope.showdriverprof = function(){ return false};
           $scope.user_name = cust_info.first_name + " " + cust_info.last_name;
           $scope.profile_picture = cust_info.picture;
+          $scope.profile = "";
           //$scope.profile_picture="img/profile.jpg";
         }
       else if (loginprof == 2){
@@ -80,6 +81,7 @@ angular.module('starter.controllers', ['firebase'])
   $scope.logout = function()
   {
     Parse.User.logOut();
+    route_screen.savelocal("","");
     $state.go('login');
     //$window.location.reload(true)
   }
@@ -101,6 +103,7 @@ angular.module('starter.controllers', ['firebase'])
 
   var self=this;
   var dl_file;
+  var cust_info;
 
   $scope.$on('$ionicView.enter', function(ev) {
     if(ev.targetScope !== $scope)
@@ -213,10 +216,13 @@ angular.module('starter.controllers', ['firebase'])
       "debug": false,
       "onNotification": function(notification) {
         var payload = notification.payload;
-        alert(notification.text);
+        //alert(notification.text);
+        message=notification.text;
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
       },
       "onRegister": function(data) {
-        alert(data.token);
+        //alert(data.token);
         route_screen.set_device_id(data.token);
         //console.log("The stored device id is " + route_screen.get_device_id());
       },
@@ -1075,7 +1081,7 @@ angular.module('starter.controllers', ['firebase'])
 //*************************** end of driverratingController ****************************
 
 //*************************** start of ratedriverController ****************************
-.controller('ratedriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup) {
+.controller('ratedriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen, $stateParams, $ionicPopup,$http) {
 
 
   var driver_trip_info;
@@ -1088,6 +1094,7 @@ angular.module('starter.controllers', ['firebase'])
   var from_lat , from_lng , to_lat, to_lng;
   var def_rating =3;
   var currentuser, cust_info, driver_comment_no =1;
+  var driver_mobile_number;
   $scope.$on('$ionicView.enter', function() {
       //console.log("called initialize function");
       //console.log("you clicked in the details section " + route_screen.get_driver_id());
@@ -1265,6 +1272,7 @@ angular.module('starter.controllers', ['firebase'])
       success:function(obj){
         console.log(obj.id);
         driver_trip_list.set("rating",obj);
+        driver_trip_list.set("rate_status","Completed");
         driver_trip_list.save();
         $scope.updt_driver_prof();
         },
@@ -1283,9 +1291,12 @@ angular.module('starter.controllers', ['firebase'])
           success: function(results) {
               var rating_temp = results[0].get("no_of_rating");
               var comment_temp = results[0].get("no_of_comment");
+              var ship_temp = results[0].get("no_of_ship");
               results[0].set("no_of_rating",rating_temp+1);
               results[0].set("no_of_comment",comment_temp+driver_comment_no);
+              results[0].set("no_of_ship",ship_temp+1);
               results[0].save();
+              $scope.updt_cust_prof();
           },
           error: function(object, error) {
               console.log(error.message);
@@ -1294,6 +1305,51 @@ angular.module('starter.controllers', ['firebase'])
         });
 
   };
+
+  $scope.updt_cust_prof = function() 
+  {
+      var currentuser = Parse.User.current();
+      var driver_info_class = Parse.Object.extend("Customer");
+      var query = new Parse.Query(driver_info_class);
+      query.equalTo("mobile_number", currentuser.get("username"));
+      query.find({
+          success: function(results) {
+              var pend_rating_temp = results[0].get("pend_rating");
+              results[0].set("pend_rating",pend_rating_temp-1);
+              results[0].save();
+              var mobile_number = driver_info.mobile_number;
+              route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  var msg = "Customer has rated your trip.";
+                  $scope.test_pusf_notif(deviceid,msg);
+                  $ionicPopup.alert({
+                      title: 'Submitted - Great!',
+                      content: 'Trucker has been notified on your rating.'
+                      }).then(function(res) {
+                      $state.go('tab.location');
+                    });
+                });
+          },
+          error: function(object, error) {
+              console.log(error.message);
+              // The file either could not be read, or could not be saved to Parse.
+            }
+        });
+
+  };
+
+$scope.test_pusf_notif = function(deviceid,msg) {
+
+      var req = route_screen.test_pusf_notif(deviceid,msg);
+      // Make the API call
+      $http(req).success(function(resp){
+        // Handle success
+        console.log("Ionic Push: Push success");
+      }).error(function(error){
+        // Handle error 
+        console.log("Ionic Push: Push error");
+      });
+
+   };
 
   $scope.initialize = function() 
   {
@@ -2372,7 +2428,7 @@ $scope.$on('$ionicView.enter', function(ev) {
         return;
 
     loginprof = route_screen.get_login_prof();
-    if(loginprof == 2){
+    if(loginprof == 2){ // manage pending driver profiles
         var truck_reg_stat = route_screen.return_truck_reg_stat();
         var driver_prof_stat = route_screen.return_driver_prof_stat();
         if (truck_reg_stat == 2 &&  driver_prof_stat == 2){
@@ -2381,6 +2437,35 @@ $scope.$on('$ionicView.enter', function(ev) {
         else{
             $state.go('driverpending');
         }
+    }
+    else if(loginprof == 1){ //manage pending ratings by customers
+        route_screen.get_cust_info().then(function(results) {
+            cust_info = results;
+            if(cust_info.pend_rating > 0){
+              route_screen.clear_driver_trip_var();
+              route_screen.get_driver_trip_list_rate().then(function(results1) {
+                    id=0;
+                    driver_trip_list = results1;
+                    route_screen.get_driver_trip_info(driver_trip_list[0],3).then(function(results2){
+                        driver_trip_info = results2;
+                        //console.log(driver_trip_list[0].get("driver_username"));
+                        var mobile_number = driver_trip_list[0].get("driver_username");
+                        route_screen.get_driver_info_match(mobile_number).then(function(results3){
+                            driver_info=results3;
+                            route_screen.override_driver_info(driver_info);
+                            route_screen.override_driver_trip_list(driver_trip_list);
+                            route_screen.override_driver_trip_info(driver_trip_info);
+                            route_screen.store_driver_id(id);
+                            // set driver to customer confirm mode
+                            route_screen.store_driver_mode(2);
+                            // set tab to inprogress mode
+                            route_screen.store_driver_tab_mode(3);
+                            $state.go('ratedriver');
+                          });
+                      });
+                });
+              }
+          });
     }
 
     //myLatlng={lat: 41.85, lng: -87.65};
@@ -3803,6 +3888,7 @@ $scope.submit = function()
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["In-progress"];
       //var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_driver_info().then(function(results){
@@ -3889,6 +3975,7 @@ $scope.submit = function()
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["Completed","Cancelled"]
       //var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_driver_info().then(function(results){
@@ -3975,6 +4062,7 @@ $scope.submit = function()
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_driver_info().then(function(results){
             driver_info=results;
@@ -4101,11 +4189,11 @@ $scope.submit = function()
           });
         //$scope.map=map;
 
-        route_screen.get_driver_trip_list_detail(clicked_item).then(function(results){
-            driver_trip_list=results;
+        route_screen.get_driver_trip_info_detail(clicked_item).then(function(results){
+            driver_trip_info = results;
             //console.log(driver_trip_list);
-            route_screen.get_driver_trip_info_detail(clicked_item).then(function(results){
-                driver_trip_info = results;
+            route_screen.get_driver_trip_list_match(driver_trip_info).then(function(results){
+                driver_trip_list=results;
                 //console.log(driver_trip_info);
                 route_screen.get_driver_trip_gps(driver_trip_info).then(function(results){
                     driver_trip_gps=results;
@@ -4438,7 +4526,7 @@ $scope.confirm = function()
 
   $scope.respond = function() 
   {
-      var confirmPopup = $ionicPopup.confirm({
+      /*var confirmPopup = $ionicPopup.confirm({
           //title: 'Do you want to confirm trip? <button class="button button-clear icon ion-ios-list-outline" ></button>',
           template: ' Do you want to confirm trip?  <button class="button button-small ng-click="close()" icon ion-close-circled" >Exit</button>',
           cancelText: 'Cancel Trip',
@@ -4448,14 +4536,42 @@ $scope.confirm = function()
               console.log('confirmed');
               $scope.updt_cnf_trp();
           }
-      });
+      });*/
+
+    var confirmPopup = $ionicPopup.show({
+      //title: 'Do you want to confirm trip? <button class="button button-small icon ion-close-circled" ng-click="close()" >Cancel</button>',
+      template: '<b>Do you want to confirm trip?</b> <button class="button button-small icon ion-close-circled" ng-click="close()" ></button>',
+      scope: $scope,
+      buttons: [
+        { text: 'Decline',
+          onTap: function(e) {
+            //console.log("clicked decline");
+            $scope.updt_decline_trp();
+          }
+        },
+        {
+          text: '<b>Confirm</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            //console.log("clicked confirm");
+            $scope.updt_cnf_trp();
+          }
+        }
+      ]
+    });
+    $scope.close = function() 
+    {
+        //console.log("clicked close");
+        confirmPopup.close();
+    };
+
   };
 
   $scope.start = function() 
   {
       var confirmPopup = $ionicPopup.confirm({
-          title: 'Do you want to Start trip? ',
-          //template: ' Do you want to Start trip?  <button class="button button-small ng-click="close()" icon ion-close-circled" >Exit</button>',
+          //title: 'Do you want to Start trip? ',
+          template: ' Do you want to Start trip?  <button class="button button-small ng-click="close()" icon ion-close-circled" >Exit</button>',
           cancelText: 'Cancel ',
           okText: 'Start Trip'
       }).then(function(res) {
@@ -4464,6 +4580,7 @@ $scope.confirm = function()
               $scope.updt_start_trp();
           }
       });
+
   };
 
   $scope.complete = function() 
@@ -4579,6 +4696,7 @@ $scope.confirm = function()
   $scope.updt_cmpt_trp = function() {
       driver_trip_info.set("status","Completed");
       driver_trip_list.set("status","Completed");
+      driver_trip_list.set("rate_status","Pending");
       cust_trip_info = driver_trip_list.get("customer_trip");
       cust_trip_info.set("status","Completed");
       var pointer_class = Parse.Object.extend("Customer_trip");
@@ -4597,10 +4715,12 @@ $scope.confirm = function()
               driver_trip_list.save();
               driver_trip_info.save();
               var mobile_number = cust_trip_list.get("customer_username");
-              var cust_info = route_screen.get_cust_info_match(mobile_number);
-              var pend_rating_hold = cust_info.get("pend_rating");
-              cust_info.set("pend_rating",pend_rating_hold+1);
-              cust_info.save();
+              route_screen.get_cust_info_match(mobile_number).then(function(results){
+                  var cust_info = results;
+                  var pend_rating_hold = cust_info.get("pend_rating");
+                  cust_info.set("pend_rating",pend_rating_hold+1);
+                  cust_info.save();
+              });
               route_screen.get_device_id_match(mobile_number).then(function(deviceid){
                   var msg = "Your shippment is delivered by trucker.";
                   $scope.test_pusf_notif(deviceid,msg);
@@ -4618,37 +4738,37 @@ $scope.confirm = function()
         });
    };
 
-  $scope.updt_decline_req = function() {
+  $scope.updt_decline_trp = function() {
+      driver_trip_info.set("status","Posted");
+      driver_trip_list.set("status","Posted");
+      driver_trip_list.set("customer_trip",null);
+      cust_trip_info = driver_trip_list.get("customer_trip");
       cust_trip_info.set("status","Posted");
-      cust_trip_info.save();
-      cust_trip_list.set("status","Posted");
-      cust_trip_list.save();
       var pointer_class = Parse.Object.extend("Customer_trip");
       var pointer = new pointer_class();
       pointer.id = cust_trip_info.id;
-      var driver_trip_class = Parse.Object.extend("Driver_trip_list");
-      var query = new Parse.Query(driver_trip_class);
+      var cust_trip_class = Parse.Object.extend("Customer_trip_list");
+      var query = new Parse.Query(cust_trip_class);
       query.equalTo("customer_trip", pointer);
       query.find({
           success: function(results) {
               console.log(results.length);
-              driver_trip_list = results[0]
-              driver_trip_list.set("status","Posted");
-              driver_trip_list.set("customer_trip","");
+              cust_trip_list = results[0]
+              cust_trip_list.set("status","Posted");
+              cust_trip_list.save();
+              cust_trip_info.save();
               driver_trip_list.save();
-              driver_trip_info = driver_trip_list.get("driver_trip");
-              driver_trip_info.set("status","Posted");
               driver_trip_info.save();
               var mobile_number = cust_trip_list.get("customer_username");
               route_screen.get_device_id_match(mobile_number).then(function(deviceid){
-                  var msg = "Your shippment is declined by trucker.";
+                  var msg = "Your shippment is declined by trucker. Your shippment is still available to other trucker to view.";
                   $scope.test_pusf_notif(deviceid,msg);
                 });
               $ionicPopup.alert({
                   title: 'Cancelled!',
-                  content: 'You will shortly be contacted by another interested driver.'
+                  content: 'You will shortly be contacted by another interested customer. '
                 }).then(function(res) {
-                     //$state.go('tab.location');
+                     $state.go('tab.location');
                 });
             },
           error: function(error) {
@@ -4706,6 +4826,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["In-progress"];
       //var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_cust_info().then(function(results){
@@ -4792,6 +4913,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["Completed","Cancelled"];
       route_screen.get_cust_info().then(function(results){
             cust_info=results;
@@ -4878,6 +5000,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
   });
 
   function initialize1() {
+      $scope.trips =[];
       var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_cust_info().then(function(results){
             cust_info=results;
@@ -5002,10 +5125,10 @@ $scope.test_pusf_notif = function(deviceid,msg) {
           });
         //$scope.map=map;
 
-        route_screen.get_cust_trip_list_detail(clicked_item).then(function(results){
-            cust_trip_list=results;
-            route_screen.get_cust_trip_info_detail(clicked_item).then(function(results){
-                cust_trip_info = results;
+        route_screen.get_cust_trip_info_detail(clicked_item).then(function(results){
+            cust_trip_info = results;
+            route_screen.get_cust_trip_list_match(cust_trip_info).then(function(results){
+                cust_trip_list=results;
                 //console.log(cust_trip_info.get("status"));
                 route_screen.get_cust_trip_gps(cust_trip_info).then(function(results){
                     cust_trip_gps=results;
@@ -5132,11 +5255,11 @@ $scope.test_pusf_notif = function(deviceid,msg) {
       };
 
     $scope.show_rating = function() {
-        if ($scope.customer.status == "In-progress" &&  customer){
+        /*if ($scope.customer.status == "In-progress" &&  customer){
             return true;
-        }else{
+        }else{*/
             return false;
-        }
+        //}
       };
 
     $scope.show_driver_info = function() {
@@ -5321,7 +5444,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
 
   $scope.respond = function() 
   {
-      var confirmPopup = $ionicPopup.confirm({
+      /*var confirmPopup = $ionicPopup.confirm({
           title: 'Do you want to confirm trip?',
           //template: 'Popup text',
           cancelText: 'Cancel',
@@ -5331,7 +5454,34 @@ $scope.test_pusf_notif = function(deviceid,msg) {
               console.log('confirmed');
               $scope.updt_cnf_trp();
           }
-      });
+      });*/
+
+    var confirmPopup = $ionicPopup.show({
+      //title: 'Do you want to confirm trip? <button class="button button-small icon ion-close-circled" ng-click="close()" >Cancel</button>',
+      template: '<b>Do you want to confirm trip?</b> <button class="button button-small icon ion-close-circled" ng-click="close()" ></button>',
+      scope: $scope,
+      buttons: [
+        { text: 'Decline',
+          onTap: function(e) {
+            //console.log("clicked decline");
+            $scope.updt_decline_trp();
+          }
+        },
+        {
+          text: '<b>Confirm</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            //console.log("clicked confirm");
+            $scope.updt_cnf_trp();
+          }
+        }
+      ]
+    });
+    $scope.close = function() 
+    {
+        //console.log("clicked close");
+        confirmPopup.close();
+    };
   };
 
   $scope.cancel_trip = function() 
@@ -5349,27 +5499,11 @@ $scope.test_pusf_notif = function(deviceid,msg) {
       });
   };
 
-  $scope.rate_driver_dummy = function() 
-  {
-      var confirmPopup = $ionicPopup.confirm({
-          //title: 'Do you want to cancel the trip? ',
-          template: ' <button class="button button-small ng-click="close()" icon ion-close-circled" >Exit</button>',
-          cancelText: 'No ',
-          okText: 'Yes'
-      }).then(function(res) {
-          if (res) {
-              console.log('cancel');
-              //$scope.updt_cncl_trp();
-          }
-      });
-  };
 
 
   $scope.updt_cnf_trp = function() {
       cust_trip_info.set("status","Confirmed");
-      cust_trip_info.save();
       cust_trip_list.set("status","Confirmed");
-      cust_trip_list.save();
       var pointer_class = Parse.Object.extend("Customer_trip");
       var pointer = new pointer_class();
       pointer.id = cust_trip_info.id;
@@ -5381,10 +5515,12 @@ $scope.test_pusf_notif = function(deviceid,msg) {
               console.log(results.length);
               driver_trip_list = results[0]
               driver_trip_list.set("status","Confirmed");
-              driver_trip_list.save();
               driver_trip_info = driver_trip_list.get("driver_trip");
               driver_trip_info.set("status","Confirmed");
+              driver_trip_list.save();
               driver_trip_info.save();
+              cust_trip_info.save();
+              cust_trip_list.save();
               var mobile_number = driver_trip_list.get("driver_username");
               route_screen.get_device_id_match(mobile_number).then(function(deviceid){
                   var msg = "Customer has accepted your request.";
@@ -5403,11 +5539,9 @@ $scope.test_pusf_notif = function(deviceid,msg) {
         });
    };
 
-  $scope.updt_decline_req = function() {
+  $scope.updt_decline_trp = function() {
       cust_trip_info.set("status","Posted");
-      cust_trip_info.save();
       cust_trip_list.set("status","Posted");
-      cust_trip_list.save();
       var pointer_class = Parse.Object.extend("Customer_trip");
       var pointer = new pointer_class();
       pointer.id = cust_trip_info.id;
@@ -5416,17 +5550,19 @@ $scope.test_pusf_notif = function(deviceid,msg) {
       query.equalTo("customer_trip", pointer);
       query.find({
           success: function(results) {
-              console.log(results.length);
+              //console.log(results.length);
               driver_trip_list = results[0]
               driver_trip_list.set("status","Posted");
-              driver_trip_list.set("customer_trip","");
-              driver_trip_list.save();
+              driver_trip_list.set("customer_trip",null);
               driver_trip_info = driver_trip_list.get("driver_trip");
               driver_trip_info.set("status","Posted");
+              driver_trip_list.save();
               driver_trip_info.save();
+              cust_trip_info.save();
+              cust_trip_list.save();
               var mobile_number = driver_trip_list.get("driver_username");
               route_screen.get_device_id_match(mobile_number).then(function(deviceid){
-                  var msg = "Customer has declined your request.";
+                  var msg = "Customer has declined your request. Your trip is still available to other customers to view.";
                   $scope.test_pusf_notif(deviceid,msg);
                 });
               $ionicPopup.alert({

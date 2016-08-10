@@ -268,6 +268,7 @@ angular.module('starter.services', [])
 		    		picture:newgoods.picture,
 		    		pict_base64:newgoods.pict_base64
 		    	};
+		    	//console.log(cust_goods);
 		    },
 
 		    get_cust_goods: function() {
@@ -362,6 +363,8 @@ angular.module('starter.services', [])
 
 		    submit_cust_trip: function(){
 		    	//cust_all_detail=[location,cust_trp,cust_goods];
+		    	//console.log(cust_all_detail);
+		    	cust_all_detail=[];
 		    	cust_all_detail.push(location);
 		    	cust_all_detail.push(cust_trp);
 		    	cust_all_detail.push(cust_goods);
@@ -405,6 +408,8 @@ angular.module('starter.services', [])
 
  			submit_driver_trip: function(){
 		    	//cust_all_detail=[location,cust_trp,cust_goods];
+		    	//console.log(driver_all_detail);
+		    	driver_all_detail=[];
 		    	driver_all_detail.push(location);
 		    	driver_all_detail.push(driver_trp);
 		    	driver_all_detail.push(driver_goods);
@@ -850,7 +855,7 @@ angular.module('starter.services', [])
 									pict3_temp = "img/truck.jpeg";
 								}
 						      	trucks_info_temp= {
-						      		id:i,
+						      		id:0,
 									registration_number:results.get('registration_number'),
 									type:results.get('type'),
 									make:results.get('make'),
@@ -1002,6 +1007,28 @@ angular.module('starter.services', [])
 	          	query.find({
 	              	success: function(results) {
 	                	//console.log("Successfully retrieved " + results.length + " trips.");
+	                	//console.log(results[0].get("driver_username"));
+						deferred.resolve(results); 
+	                },
+	              	error: function(error) {
+	                	alert("Error: " + error.code + " " + error.message);
+	                	deferred.reject();
+	              	}
+	            });
+	            return deferred.promise;
+		    },
+
+		    get_driver_trip_list_rate: function(results) {
+		    	// define the function as a promise function
+		    	var deferred = $q.defer();
+	         	var driver_trip_table= new Parse.Object.extend("Driver_trip_list");
+	          	query =  new Parse.Query(driver_trip_table);
+	          	//console.log(results.id);
+	          	query.equalTo("status","Completed");
+	          	query.equalTo("rate_status","Pending");
+	          	query.find({
+	              	success: function(results) {
+	                	console.log("Successfully retrieved " + results.length + " trips.");
 	                	//console.log(results[0].get("driver_username"));
 						deferred.resolve(results); 
 	                },
