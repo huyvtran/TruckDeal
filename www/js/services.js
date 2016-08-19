@@ -1098,7 +1098,7 @@ angular.module('starter.services', [])
 			    return deferred.promise;
 		    },
 
-		    get_cust_trip_match: function(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter) { 
+		    get_cust_trip_match: function(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter,curr_date) { 
 			    // define the function as a promise function
 			    var deferred = $q.defer();
 			    var southwestOfSF = new Parse.GeoPoint(latSWValue, lngtSWValue);
@@ -1108,6 +1108,7 @@ angular.module('starter.services', [])
 			    //query.equalTo("objectId", results.get("customer_trip").id);
 			    query.withinGeoBox("source_coordinates", southwestOfSF, northeastOfSF);
 			    query.containedIn("status", filter);
+			    query.greaterThan("start_date_time", curr_date);
 			    query.find({
 			    //query.get(results.get("customer_trip").id,{
 			        success: function(results) {
@@ -1122,7 +1123,7 @@ angular.module('starter.services', [])
 			    return deferred.promise;
 		    },
 
-		    get_cust_trip_refine: function(filter,mile) { 
+		    get_cust_trip_refine: function(filter,mile,curr_date,start_date_low,start_date_high,end_date_low,end_date_high) { 
 			    // define the function as a promise function
 			    var deferred = $q.defer();
 				var point = new Parse.GeoPoint({latitude: location.from_lat, longitude: location.from_lng});
@@ -1130,6 +1131,11 @@ angular.module('starter.services', [])
 			    var query = new Parse.Query(cust_trp);
 			    query.withinMiles("source_coordinates", point, mile);
 			    query.containedIn("status", filter);
+			    query.greaterThan("start_date_time", curr_date);
+			    query.greaterThan("start_date_time", start_date_low);
+			    query.lessThan("start_date_time", start_date_high);
+			    query.greaterThan("end_date_time", end_date_low);
+			    query.lessThan("end_date_time", end_date_high);
 			    query.find({
 			    //query.get(results.get("customer_trip").id,{
 			        success: function(results) {
@@ -1188,7 +1194,7 @@ angular.module('starter.services', [])
 			    return deferred.promise;
 		    },
 
-		    get_driver_trip_match: function(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter) { 
+		    get_driver_trip_match: function(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter,curr_date) { 
 			    // define the function as a promise function
 			    var deferred = $q.defer();
 			    var southwestOfSF = new Parse.GeoPoint(latSWValue, lngtSWValue);
@@ -1198,6 +1204,7 @@ angular.module('starter.services', [])
 			    //query.equalTo("objectId", results.get("driver_trip").id);
 			    query.withinGeoBox("source_coordinates", southwestOfSF, northeastOfSF);
 			    query.containedIn("status", filter);
+			    query.greaterThan("start_date_time", curr_date);
 			    query.find({
 			    //query.get(results.get("driver_trip").id,{
 			        success: function(results) {
@@ -1212,7 +1219,7 @@ angular.module('starter.services', [])
 			    return deferred.promise;
 		    },
 
-		    get_driver_trip_refine: function(filter,mile) { 
+		    get_driver_trip_refine: function(filter,mile,curr_date,start_date_low,start_date_high,end_date_low,end_date_high) { 
 			    // define the function as a promise function
 			    var deferred = $q.defer();
 				var point = new Parse.GeoPoint({latitude: location.from_lat, longitude: location.from_lng});
@@ -1220,6 +1227,11 @@ angular.module('starter.services', [])
 			    var query = new Parse.Query(driver_trp);
 			    query.withinMiles("source_coordinates", point, mile);
 			    query.containedIn("status", filter);
+			    query.greaterThan("start_date_time", curr_date);
+			    query.greaterThan("start_date_time", start_date_low);
+			    query.lessThan("start_date_time", start_date_high);
+			    query.greaterThan("end_date_time", end_date_low);
+			    query.lessThan("end_date_time", end_date_high);
 			    query.find({
 			    //query.get(results.get("driver_trip").id,{
 			        success: function(results) {

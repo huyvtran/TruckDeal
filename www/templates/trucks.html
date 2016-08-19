@@ -10,7 +10,7 @@
       </div>
     </div>
     <ion-list >
-      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="truck in trucks" type="item-text-wrap" ng-click="clickedtruck(truck.id)">
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="truck in trucks | orderBy:'status'" type="item-text-wrap" ng-click="clickedtruck(truck.id)">
         <img ng-src="{{truck.picture1}}">
         <h3>{{truck.make}} {{truck.model}}</h3>
         <h3>{{truck.type}}</h3>

@@ -1,11 +1,11 @@
-<ion-view view-title="Select Customer" ng-init="initialize()" ng-controller="selectcustomerController as controller">
+<ion-view view-title={{title}} ng-init="initialize()" ng-controller="selectcustomerController as controller">
   <ion-nav-buttons side="right">
       <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="confirm()" ng-show="customermode()"> Confirm</button>
       <button class="button icon-left button-large ion-android-bus" ng-click="driverdetail(0)" ng-show="show_driver_info()"> Driver Details</button>
       <button class="button button-large icon ion-close-circled " ng-click="cancel_trip()" ng-show="show_cancel_trip()">Cancel Trip</button>
   </ion-nav-buttons>
   <ion-nav-buttons side="left">
-      <button class="button icon-left button-large ion-android-checkmark-circle" ng-click="rate_driver(0)" ng-show="show_rating()"> Rate Driver</button>
+      <!--<button class="button icon-left button-large ion-android-checkmark-circle" ng-click="rate_driver(0)" ng-show="show_rating()"> Rate Driver</button> -->
   </ion-nav-buttons>
   <ion-content>
 	<div id="map3" data-tap-disabled="true" style="height: 200px; width: 100%;"></div>
@@ -22,8 +22,8 @@
 					<h2>{{customer.source}} </br>-- To -- {{customer.destination}} </h2>
 				    <p>
 				      <i class="icon ion-map"></i></ion-item >
-				      <strong>Start Date & Time : </strong>{{customer.pickdatetime| date: "yyyy-MM-dd h:mm a"}}</br>
-				      <strong>End Date & Time : </strong>{{customer.droptimedate| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>Start Date: </strong>{{customer.pickdatetime| date: "yyyy-MM-dd h:mm a"}}</br>
+				      <strong>End Date: </strong>{{customer.droptimedate| date: "yyyy-MM-dd h:mm a"}}</br>
 				    </p>
 		    	</ion-item >
 		      	<ion-item class="item-icon-right item-text-wrap" ng-show="display_add()">
@@ -55,7 +55,7 @@
 				    </p>
 		    	</ion-item >
 
-			    <ion-item class="row">
+			    <ion-item class="row" ng-show="customer.picture">
 			         <img class="full-image" src="{{customer.picture}}">
 			    </ion-item>
 	     	<ion-list>

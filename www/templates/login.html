@@ -28,7 +28,8 @@
     </div>
     <div class="padding row">
       <div class="col">
-        <span class="stable">Forgot password?</span>
+       <!-- <span class="stable">Forgot password?</span>-->
+      <a ng-click="openModal1()"class="stable" >Forgot password</a>
       </div>
       <div class="col">
       <!--<a ui-sref="register" class="stable" >New here? Sign up</a>-->
@@ -82,6 +83,49 @@
             </div>
             </span>
             <button class="button button-full button-royal" ng-click="signup(newUser)">Create</button>
+          </div>
+        </ion-content>
+      </ion-modal-view>
+    </script>
+
+    <script id="modal1.html" type="text/ng-template">
+      <ion-modal-view class="login-pg-bg">
+        <ion-header-bar class="bar-assertive bar-header bar-positive">
+          <h1 class="title">Reset Password</h1>
+          <button class="button button-clear button-primary" ng-click="modal1.hide()">Cancel</button>
+        </ion-header-bar>
+        <ion-content class="padding">
+          <div class="padding text-center">
+            <h1>
+              <img class="login_logo" ng-src="img/logo.png">
+            </h1>
+            <p class="stable">We are near you ....</p>
+          </div>
+          <!--<ion-toggle ng-model="isdriver" ng-click="drivermode()"> {{resetUser.driver}}</ion-toggle>-->
+          <div class="list">
+            <label class="item item-input">
+              <input ng-model="resetUser.mobilenumber" ng-readonly="showpassword()" type="number" placeholder="Mobile Number">
+            </label>
+            <label class="item item-input">
+              <input ng-model="resetUser.firstName" ng-readonly="showpassword()" type="text" placeholder="First Name">
+            </label>
+            <label class="item item-input" ng-show="showpassword()">
+              <input ng-model="resetUser.password" type="password" placeholder="Password">
+            </label>
+            <!--<span ng-show="showdriver()">
+            <label class="item item-input" ion-datetime-picker ng-model="resetUser.dob">
+              Date of Birth: {{resetUser.dob| date: "yyyy-MM-dd "}}
+            </label>
+            <label class="item item-input">
+              <input ng-model="resetUser.driving_license" type="text" placeholder="Driving license No">
+            </label>
+            <div class="item item-icon-left" >
+              <button class="button button-icon icon ion-camera" ng-click="takePicture()"> <input type="text" placeholder="Upload Driving license" id="picture"></button>
+              <img ng-show="resetUser.dl_picture !== undefined" ng-src="{{resetUser.dl_picture}}"/>
+            </div>
+            </span>-->
+            <button class="button button-full button-royal" ng-show="showpassword()" ng-click="reset_final(resetUser)">Reset</button>
+            <button class="button button-full button-royal" ng-show="!showpassword()" ng-click="reset(resetUser)">Submit</button>
           </div>
         </ion-content>
       </ion-modal-view>

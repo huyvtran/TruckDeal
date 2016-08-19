@@ -7,15 +7,15 @@
       </div>
     </div>
     <ion-list >
-      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="trip in trips" type="item-text-wrap" ng-click="clickecustomer(trip.id)">
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="trip in trips | orderBy:'start_date_time'" type="item-text-wrap" ng-click="clickecustomer(trip.id)">
         <img ng-src="{{trip.picture}}">
         <h3>{{trip.source}}</h3>
         <h3>{{trip.destination}}</h3>
         <p>
         <i class="icon ion-chevron-right icon-accessory"></i>
-          <strong>Start Date & Time : </strong>{{trip.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
-          <strong>End Date & Time : </strong>{{trip.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
-          <strong>Status : </strong>{{trip.status}}
+          <strong>Start Date: </strong>{{trip.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+          <strong>End Date: </strong>{{trip.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+          <strong>Status: </strong>{{trip.status}}
         </p>
       </ion-item>
     </ion-list>

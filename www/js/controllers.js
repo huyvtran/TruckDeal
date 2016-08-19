@@ -6,7 +6,7 @@ angular.module('starter.controllers', ['firebase'])
 
 .controller('SideMenuController', function($scope, $rootScope, $state, route_screen,$window, $cordovaToast) {
   
-  var loginprof, cust_info, driver_info;
+  var loginprof, cust_info, driver_info,stage;
   $scope.main = {};
 
   $scope.$on('$ionicView.enter', function(ev) {
@@ -118,13 +118,18 @@ angular.module('starter.controllers', ['firebase'])
         password:''
       };
       $scope.newUser={
-        firstName: 'sendurr',
+        firstName: "",
         lastName: "",
         mobilenumber: null,
         password:'',
         email:'',
         dob: new Date(),
         driving_license: ""
+      };
+      $scope.resetUser ={
+        mobilenumber: null,
+        firstName:"",
+        password:''
       };
 
       $scope.ischecked = true;
@@ -492,6 +497,22 @@ angular.module('starter.controllers', ['firebase'])
     $scope.modal.hide();
   };
 
+  $ionicModal.fromTemplateUrl('modal1.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+    }).then(function(modal) {
+    $scope.modal1 = modal;
+    });
+
+  $scope.openModal1 = function() {
+    stage=0;
+    $scope.showpassword = function(){return false};
+    $scope.modal1.show();
+  };
+  $scope.closeModal1 = function() {
+    $scope.modal1.hide();
+  };
+
    $scope.showAlert = function() {
      var alertPopup = $ionicPopup.alert({
        title: 'Don\'t eat that!',
@@ -531,6 +552,167 @@ angular.module('starter.controllers', ['firebase'])
         $scope.isdriver = false;
         $scope.showdriver = function(){ return false};
       }
+  }
+
+  $scope.reset = function(resetUser)
+  {
+      if(resetUser.mobilenumber== null ){
+        message='Please enter mobile number!';
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
+      }
+      else if(resetUser.firstName ==""){
+        message='Please enter first name!';
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
+      }
+      else{
+        $scope.reset_after_valid(resetUser);
+      }
+  }
+
+  $scope.reset_final = function(resetUser)
+  {
+      if(resetUser.mobilenumber== null ){
+        message='Please enter mobile number!';
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
+      }
+      else if(resetUser.firstName ==""){
+        message='Please enter first name!';
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
+      }
+      else if(resetUser.password ==""){
+        message='Please enter password!';
+        console.log(message);
+        $cordovaToast.showShortBottom(message);
+      }
+      else{
+        $scope.reset_final_after_valid(resetUser);
+      }
+  }
+
+  $scope.reset_after_valid = function(resetUser) 
+  {
+      var user_class = Parse.Object.extend("User");
+      var query = new Parse.Query(user_class);
+      query.equalTo("username", resetUser.mobilenumber.toString());
+      query.find({
+          success : function(result) {
+                if(result.length>0){
+                    //console.log("found");
+                    if(result[0].get("group") == "driver"){
+                        //console.log(result[0].get("driver"));
+                        var driver_user = result[0].get("driver");
+                        $scope.find_driver_firstname(resetUser,driver_user);
+                    }
+                    else{
+                        //console.log(result[0].get("customer"));
+                        var cust_user = result[0].get("customer");
+                        $scope.find_cust_firstname(resetUser,cust_user);
+                    }
+                }
+                else{
+                    message='Incorrect mobile number!';
+                    console.log(message);
+                    $cordovaToast.showShortBottom(message);
+                }
+            },
+            error : function(error) {
+                console.log("error finding user" + error);
+              }
+      });
+  }
+
+  $scope.find_cust_firstname = function(resetUser,cust_user) 
+  {
+      var cust_class = Parse.Object.extend("Customer");
+      var query = new Parse.Query(cust_class);
+      query.get(cust_user.id,{
+          success : function(result) {
+                if(result.get("first_name") == resetUser.firstName){
+                    //console.log("found");
+                    $scope.setup_for_reset();
+                }
+                else{
+                    message='Incorrect first name!';
+                    console.log(message);
+                    $cordovaToast.showShortBottom(message);
+                }
+            },
+            error : function(error) {
+                console.log("error finding user" + error);
+              }
+      });
+  }
+
+  $scope.find_driver_firstname = function(resetUser,driver_user) 
+  {
+      var driver_class = Parse.Object.extend("Driver");
+      var query = new Parse.Query(driver_class);
+      query.get(driver_user.id,{
+          success : function(result) {
+                if(result.get("first_name") == resetUser.firstName){
+                    //console.log("found");
+                    $scope.setup_for_reset();
+                }
+                else{
+                    message='Incorrect first name!';
+                    console.log(message);
+                    $cordovaToast.showShortBottom(message);
+                }
+            },
+            error : function(error) {
+                console.log("error finding user" + error);
+              }
+      });
+  }
+
+  $scope.setup_for_reset = function() 
+  {
+      $scope.showpassword = function(){return true};
+      // this is to correct double submit issue
+      if(stage ==0){
+          message='Press submit again!';  
+      }
+      else{
+          message='Enter new password!';
+      }
+      stage = stage+1;
+      //message='Enter new password!';
+      console.log(message);
+      $cordovaToast.showShortBottom(message);
+
+  }
+
+  $scope.reset_final_after_valid = function(resetUser) 
+  {
+      var user_class = Parse.Object.extend("User");
+      var query = new Parse.Query(user_class);
+      query.equalTo("username", resetUser.mobilenumber.toString());
+      query.find({
+          success : function(result) {
+                if(result.length>0){
+                    result[0].set('password',resetUser.password.toString());
+                    result[0].save(null,{
+                        success : function(result) {
+                            message='Your password is reset!';
+                            console.log(message);
+                            $cordovaToast.showShortBottom(message);
+                            $scope.closeModal1();
+                        },
+                        error : function(error) {
+                            console.log("error setting password");
+                            $scope.closeModal1();
+                        }
+                      });
+                }
+            },
+            error : function(error) {
+                console.log("error finding user" + error);
+              }
+      });
   }
 
   $scope.init = function() 
@@ -2573,7 +2755,8 @@ $scope.$on('$ionicView.enter', function(ev) {
     if(loginprof == 1){
 
          var filter =["Posted"];
-          route_screen.get_driver_trip_match(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter).then(function(results){
+         var curr_date = new Date();
+          route_screen.get_driver_trip_match(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter,curr_date).then(function(results){
               driver_trip_info = results;
               //console.log(driver_trip_info);
               for (var i = 0; i < driver_trip_info.length; i++) {
@@ -2592,7 +2775,8 @@ $scope.$on('$ionicView.enter', function(ev) {
     else if(loginprof == 2){
 
          var filter =["Posted"];
-          route_screen.get_cust_trip_match(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter).then(function(results){
+         var curr_date = new Date();
+          route_screen.get_cust_trip_match(latNEValue,lngtNEValue,latSWValue,lngtSWValue,filter,curr_date).then(function(results){
               cust_trip_info = results;
               //console.log(cust_trip_info);
               for (var i = 0; i < cust_trip_info.length; i++) {
@@ -2756,7 +2940,7 @@ $scope.$on('$ionicView.enter', function(ev) {
                 source: cust_trip_info[i].get("source"),
                 destination: cust_trip_info[i].get("destination"),
                 start_date_time: cust_trip_info[i].get("start_date_time"),
-                end_date_time: cust_trip_info[i].get("start_date_time"),
+                end_date_time: cust_trip_info[i].get("end_date_time"),
                 status: cust_trip_info[i].get("status"),
                 id:i,
                 picture: pict_temp
@@ -2783,7 +2967,7 @@ $scope.$on('$ionicView.enter', function(ev) {
                 source: driver_trip_info[i].get("source"),
                 destination: driver_trip_info[i].get("destination"),
                 start_date_time: driver_trip_info[i].get("start_date_time"),
-                end_date_time: driver_trip_info[i].get("start_date_time"),
+                end_date_time: driver_trip_info[i].get("end_date_time"),
                 status: driver_trip_info[i].get("status"),
                 id:i,
                 picture: pict_temp
@@ -3263,18 +3447,24 @@ $scope.$on('$ionicView.enter', function(ev) {
           return false;
         };
 
-        driver_trip_info=[], driver_trip_list=[],driver_info=[], driver_trip_gps=[];
-        var filter =["Posted"];
-        location = route_screen.get_temp_loc();
-        route_screen.get_driver_trip_refine(filter,mile).then(function(results){
-            driver_trip_info_temp = results;
-            $scope.innerloop(0,driver_trip_info_temp.length);
-        });
-
-      //$scope.chats = route_screen.all();
       cust_goods_info = route_screen.get_cust_goods();
       cust_trip_info = route_screen.get_cust_trip();
       cust_info = route_screen.return_cust_info();
+      var curr_date = new Date();
+      var start_date_low=new Date(cust_trip_info.pickdatetime.getFullYear(),cust_trip_info.pickdatetime.getMonth(),cust_trip_info.pickdatetime.getDate()-1);
+      var start_date_high=new Date(cust_trip_info.pickdatetime.getFullYear(),cust_trip_info.pickdatetime.getMonth(),cust_trip_info.pickdatetime.getDate()+2);
+      var end_date_low=new Date(cust_trip_info.droptimedate.getFullYear(),cust_trip_info.droptimedate.getMonth(),cust_trip_info.droptimedate.getDate()-2);
+      var end_date_high=new Date(cust_trip_info.droptimedate.getFullYear(),cust_trip_info.droptimedate.getMonth(),cust_trip_info.droptimedate.getDate()+2);
+
+      driver_trip_info=[], driver_trip_list=[],driver_info=[], driver_trip_gps=[];
+      var filter =["Posted"];
+      location = route_screen.get_temp_loc();
+      route_screen.get_driver_trip_refine(filter,mile,curr_date,start_date_low,start_date_high,end_date_low,end_date_high).then(function(results){
+          driver_trip_info_temp = results;
+          $scope.innerloop(0,driver_trip_info_temp.length);
+      });
+
+      //$scope.chats = route_screen.all();
       /*route_screen.return_cust_info().then(function(results){
         cust_info = results;
         $scope.summary.picture = cust_info.picture;
@@ -3377,7 +3567,7 @@ $scope.$on('$ionicView.enter', function(ev) {
                 source: driver_trip_info[i].get("source"),
                 destination: driver_trip_info[i].get("destination"),
                 start_date_time: driver_trip_info[i].get("start_date_time"),
-                end_date_time: driver_trip_info[i].get("start_date_time"),
+                end_date_time: driver_trip_info[i].get("end_date_time"),
                 status: driver_trip_info[i].get("status"),
                 id:i,
                 picture: pict_temp
@@ -3580,19 +3770,25 @@ $scope.submit = function()
           return false;
         };
 
-        cust_trip_info=[], cust_trip_list=[],cust_info=[], cust_trip_gps=[];
-        var filter =["Posted"];
-        location = route_screen.get_temp_loc();
-        route_screen.get_cust_trip_refine(filter,mile).then(function(results){
-            cust_trip_info_temp = results;
-            $scope.innerloop(0,cust_trip_info_temp.length);
-        });
-
-      //$scope.chats = route_screen.all();
       driver_goods_info = route_screen.get_driver_goods();
       driver_trip_info = route_screen.get_driver_trp();
       selected_truck_info = route_screen.get_driver_truck();
       driver_info = route_screen.return_driver_info();
+      var curr_date = new Date();
+      var start_date_low=new Date(driver_trip_info.start_date_time.getFullYear(),driver_trip_info.start_date_time.getMonth(),driver_trip_info.start_date_time.getDate()-1);
+      var start_date_high=new Date(driver_trip_info.start_date_time.getFullYear(),driver_trip_info.start_date_time.getMonth(),driver_trip_info.start_date_time.getDate()+2);
+      var end_date_low=new Date(driver_trip_info.end_date_time.getFullYear(),driver_trip_info.end_date_time.getMonth(),driver_trip_info.end_date_time.getDate()-2);
+      var end_date_high=new Date(driver_trip_info.end_date_time.getFullYear(),driver_trip_info.end_date_time.getMonth(),driver_trip_info.end_date_time.getDate()+2);
+
+      cust_trip_info=[], cust_trip_list=[],cust_info=[], cust_trip_gps=[];
+      var filter =["Posted"];
+      location = route_screen.get_temp_loc();
+      route_screen.get_cust_trip_refine(filter,mile,curr_date,start_date_low,start_date_high,end_date_low,end_date_high).then(function(results){
+        cust_trip_info_temp = results;
+          $scope.innerloop(0,cust_trip_info_temp.length);
+      });
+
+      //$scope.chats = route_screen.all();
       $scope.driver={
           source:driver_trip_info.source,
           destination: driver_trip_info.destination,
@@ -3695,7 +3891,7 @@ $scope.submit = function()
                 source: cust_trip_info[i].get("source"),
                 destination: cust_trip_info[i].get("destination"),
                 start_date_time: cust_trip_info[i].get("start_date_time"),
-                end_date_time: cust_trip_info[i].get("start_date_time"),
+                end_date_time: cust_trip_info[i].get("end_date_time"),
                 status: cust_trip_info[i].get("status"),
                 id:i,
                 picture: pict_temp
@@ -3927,7 +4123,7 @@ $scope.submit = function()
                 source: driver_trip_info[i].get("source"),
                 destination: driver_trip_info[i].get("destination"),
                 start_date_time: driver_trip_info[i].get("start_date_time"),
-                end_date_time: driver_trip_info[i].get("start_date_time"),
+                end_date_time: driver_trip_info[i].get("end_date_time"),
                 status: driver_trip_info[i].get("status"),
                 id:i,
                 picture: driver_info.picture
@@ -3976,7 +4172,7 @@ $scope.submit = function()
 
   function initialize1() {
       $scope.trips =[];
-      var filter = ["Completed","Cancelled"]
+      var filter = ["Completed","Cancelled","Expired"]
       //var filter = ["Posted","Requested","Confirmed","Please Respond"];
       route_screen.get_driver_info().then(function(results){
             driver_info=results;
@@ -4014,7 +4210,7 @@ $scope.submit = function()
                 source: driver_trip_info[i].get("source"),
                 destination: driver_trip_info[i].get("destination"),
                 start_date_time: driver_trip_info[i].get("start_date_time"),
-                end_date_time: driver_trip_info[i].get("start_date_time"),
+                end_date_time: driver_trip_info[i].get("end_date_time"),
                 status: driver_trip_info[i].get("status"),
                 id:i,
                 picture: driver_info.picture
@@ -4100,7 +4296,7 @@ $scope.submit = function()
                 source: driver_trip_info[i].get("source"),
                 destination: driver_trip_info[i].get("destination"),
                 start_date_time: driver_trip_info[i].get("start_date_time"),
-                end_date_time: driver_trip_info[i].get("start_date_time"),
+                end_date_time: driver_trip_info[i].get("end_date_time"),
                 status: driver_trip_info[i].get("status"),
                 id:i,
                 picture: driver_info.picture
@@ -4110,6 +4306,19 @@ $scope.submit = function()
         $scope.trips = temp_trips1;
       }
   }
+
+  $scope.statusorder = function(trip)
+  {
+      if(trip.status == "Please Respond"){
+          return 0;
+      }
+      if(trip.status == "Requested"){
+          return 1;
+      }
+      else{
+          return 2;
+      }
+  };
 
   $scope.initialize = function() 
   {
@@ -4156,10 +4365,12 @@ $scope.submit = function()
           if(route_screen.get_driver_mode() == 4)
               {
                 //console.log("the driver mode is select view mode of customer");
+                $scope.title="Select Driver";
                 return true;
               }
             else{
                 //console.log("the dirver mode is edit");
+                $scope.title="Driver Details";
                 return false;
               }
         }
@@ -4865,7 +5076,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
                 source: cust_trip_info[i].get("source"),
                 destination: cust_trip_info[i].get("destination"),
                 start_date_time: cust_trip_info[i].get("start_date_time"),
-                end_date_time: cust_trip_info[i].get("start_date_time"),
+                end_date_time: cust_trip_info[i].get("end_date_time"),
                 status: cust_trip_info[i].get("status"),
                 id:i,
                 picture: cust_info.picture
@@ -4914,7 +5125,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
 
   function initialize1() {
       $scope.trips =[];
-      var filter = ["Completed","Cancelled"];
+      var filter = ["Completed","Cancelled","Expired"];
       route_screen.get_cust_info().then(function(results){
             cust_info=results;
             //console.log(cust_info);
@@ -4951,7 +5162,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
                 source: cust_trip_info[i].get("source"),
                 destination: cust_trip_info[i].get("destination"),
                 start_date_time: cust_trip_info[i].get("start_date_time"),
-                end_date_time: cust_trip_info[i].get("start_date_time"),
+                end_date_time: cust_trip_info[i].get("end_date_time"),
                 status: cust_trip_info[i].get("status"),
                 id:i,
                 picture: cust_info.picture
@@ -5038,7 +5249,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
                 source: cust_trip_info[i].get("source"),
                 destination: cust_trip_info[i].get("destination"),
                 start_date_time: cust_trip_info[i].get("start_date_time"),
-                end_date_time: cust_trip_info[i].get("start_date_time"),
+                end_date_time: cust_trip_info[i].get("end_date_time"),
                 status: cust_trip_info[i].get("status"),
                 id:i,
                 picture: cust_info.picture
@@ -5048,6 +5259,19 @@ $scope.test_pusf_notif = function(deviceid,msg) {
         $scope.trips = temp_trips1;
       }
   }
+
+  $scope.statusorder = function(trip)
+  {
+      if(trip.status == "Please Respond"){
+          return 0;
+      }
+      if(trip.status == "Requested"){
+          return 1;
+      }
+      else{
+          return 2;
+      }
+  };
 
   $scope.initialize = function() 
   {
@@ -5092,10 +5316,12 @@ $scope.test_pusf_notif = function(deviceid,msg) {
           if(route_screen.get_customer_mode() == 4)
               {
                 //console.log("the customer mode is select view mode of driver");
+                $scope.title="Select Customer";
                 return true;
               }
             else{
                 //console.log("the customer mode is edit");
+                $scope.title="Customer Details";
                 return false;
               }
         }
@@ -5205,7 +5431,8 @@ $scope.test_pusf_notif = function(deviceid,msg) {
           pict_temp = cust_trip_info.get('picture').url();
       }
       else{
-          pict_temp = "img/truck.jpeg";
+          //pict_temp = "img/truck.jpeg";
+          pict_temp = "";
       }
       $scope.customer={
           source: cust_trip_info.get("source"),

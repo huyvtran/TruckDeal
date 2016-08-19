@@ -37,16 +37,16 @@
           <i class="icon ion-android-contract"></i>
             <input type="number" ng-model="truck.capacity" class="stable" placeholder="Load capacity (Kg)" id="capacity">
         </div>
-        <div class="item item-icon-left" >
-          <button class="button button-icon icon ion-camera"  ng-click="takePicture1()"> <input type="text" class="stable" placeholder="Upload Front Picture" id="picture"></button>
+        <div class="item item-icon-left" ng-click="takePicture1()">
+          <i class="icon ion-camera"></i><input type="text" class="stable" placeholder="Upload Front Picture" id="picture"></button>
           <img ng-show="truck.picture1 !== undefined" ng-src="{{truck.picture1}}"/>
         </div>
-        <div class="item item-icon-left" >
-          <button class="button button-icon icon ion-camera"  ng-click="takePicture2()"> <input type="text" class="stable" placeholder="Upload registration documents" id="picture"></button>
+        <div class="item item-icon-left" ng-click="takePicture2()">
+          <i class="icon ion-camera"></i><input type="text" class="stable" placeholder="Upload registration documents" id="picture"></button>
           <img ng-show="truck.picture2 !== undefined" ng-src="{{truck.picture2}}"/>
         </div>
-        <div class="item item-icon-left" >
-          <button class="button button-icon icon ion-camera"  ng-click="takePicture3()"> <input type="text" class="stable" placeholder="Upload Load Area Picture" id="picture"></button>
+        <div class="item item-icon-left" ng-click="takePicture3()">
+          <i class=" icon ion-camera"></i> <input type="text" class="stable" placeholder="Upload Load Area Picture" id="picture"></button>
           <img ng-show="truck.picture3 !== undefined" ng-src="{{truck.picture3}}"/>
         </div>
       </div>

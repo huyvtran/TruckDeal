@@ -10,14 +10,14 @@
       </div>
     </div>
           <ion-list >
-            <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="customer in customers" type="item-text-wrap" ng-click="clickecustomer(customer.id)">
+            <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="customer in customers | orderBy: 'start_date_time'" type="item-text-wrap" ng-click="clickecustomer(customer.id)">
               <img ng-src="{{customer.picture}}">
               <h3>{{customer.source}}</h3>
               <h3>{{customer.destination}}</h3>
               <p>
               <i class="icon ion-chevron-right icon-accessory"></i>
-                <strong>Start Date & Time : </strong>{{customer.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
-                <strong>End Date & Time : </strong>{{customer.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+                <strong>Start Date: </strong>{{customer.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+                <strong>End Date: </strong>{{customer.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
                 <strong>Status : </strong>{{customer.status}}
               </p>
             </ion-item>
@@ -31,8 +31,8 @@
           <h3>From : {{driver.source}}</h3>
           <h3>To : {{driver.destination}}</h3>
           <h3>Truck : {{driver.truck}}</h3>
-          <h4>Start Time : {{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
-          <h4>End Time : {{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
+          <h4>Pickup Time: {{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
+          <h4>Drop Time: {{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
         </div>
       </div>
 </ion-footer-bar>

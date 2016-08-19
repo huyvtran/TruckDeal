@@ -7,7 +7,7 @@
       </div>
     </div>
     <ion-list >
-      <div class="card" ng-repeat="driver in drivers" ng-click="clickedriver(driver.id)">
+      <div class="card" ng-repeat="driver in drivers | orderBy:'-createdAt'" ng-click="clickedriver(driver.id)">
         <div class= "item item-divider item-text-wrap">
         <h3>Customer Name : {{driver.cust_name}}</h3>
         <h3>Rated on : {{driver.createdAt | date: "yyyy-MM-dd "}}</h3>

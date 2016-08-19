@@ -10,14 +10,14 @@
       </div>
     </div>
     <ion-list >
-      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="driver in drivers" type="item-text-wrap" ng-click="clickedriver(driver.id)">
+      <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="driver in drivers | orderBy: 'start_date_time'" type="item-text-wrap" ng-click="clickedriver(driver.id)">
         <img ng-src="{{driver.picture}}">
         <h3>{{driver.source}}</h3>
         <h3>{{driver.destination}}</h3>
         <p>
           <i class="icon ion-chevron-right icon-accessory"></i>
-          <strong>Start Date & Time : </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
-          <strong>End Date & Time : </strong>{{driver.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
+          <strong>Start Date: </strong>{{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</br>
+          <strong>End Date: </strong>{{driver.end_date_time| date: " yyyy-MM-dd h:mm a"}}</br>
           <strong>Status : </strong>{{driver.status}}
         </p>
      </ion-item>

@@ -6,7 +6,10 @@
 		<div id="map4" data-tap-disabled="true" style="height: 200px; width: 100%;"></div>
 	<div class="list card">
 	  	<h3>Rating:</h3>
-	    <ionic-ratings ratingsobj='ratingsObject'></ionic-ratings> <span id="rating_no"> {{driver.rating}} </span></br>
+	    	<div class = "row">
+	    		<div class = "col"><ionic-ratings ratingsobj='ratingsObject'></ionic-ratings></div>
+	    		<div class = "col"><span id="rating_no"> <b>{{driver.rating}} </b></span></div>
+	    	</div></br>
         <h3>Comments:</h3>
         <label class="item item-input">
           <textarea placeholder="Type your comments here" ng-model="driver.comments" id="comments" rows="3" cols="20" style="width: 100%"></textarea></br>
