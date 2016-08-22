@@ -320,7 +320,7 @@ angular.module('starter.controllers', ['firebase'])
         newUser.password="";
         newUser.email="";
         $scope.closeModal();
-        $state.go('tab.location');
+        //$state.go('tab.location');
         },
       error: function(user, error) {
         // Show the error message somewhere and let the user try again.
@@ -341,12 +341,14 @@ angular.module('starter.controllers', ['firebase'])
     success:function(obj){
 	    //console.log(obj.id);
       var p2 = Parse.User.current();
+      //console.log(p2.get("username"));
       p2.set("group","customer");
       p2.set("customer", obj);
       p2.save();
       route_screen.set_login_prof(1);
       route_screen.get_cust_info(); 
       route_screen.savelocal("","");
+      $state.go('tab.location');
 	    },
     error:function(error){
 	    console.log(error.message);
@@ -382,6 +384,7 @@ angular.module('starter.controllers', ['firebase'])
                 route_screen.set_login_prof(2);
                 route_screen.get_driver_info();
                 route_screen.savelocal("","");
+                $state.go('tab.location');
                 },
             error:function(error){
                 //console.log(error.message);

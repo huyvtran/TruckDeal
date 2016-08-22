@@ -76,6 +76,7 @@ angular.module('starter.services', [])
   }];
 
 	var deviceid; // This holds the device id for push notification.
+	var page_flag;// page_flag = 0 past page as signup;
 	var loginprof=1; // loginprof = 1 logined as customer , loginprof = 2 logined as driver , loginprof = 3 logined as admin
 	var currentuser , currentcustomer, location;
 	var driver_prof_stat = 1;// driver_prof_stat = 1 for approval pending , driver_prof_stat = 2 for approved.
@@ -168,6 +169,14 @@ angular.module('starter.services', [])
 
 		    get_login_prof: function() {
 		    	return loginprof;
+		    },
+
+		    set_last_page: function(page) {
+		    	page_flag = page
+		    },
+
+		    get_last_page: function() {
+		    	return page_flag;
 		    },
 
 		    get_driver_prof_stat: function(){
