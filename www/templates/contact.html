@@ -1,0 +1,32 @@
+<ion-view view-title="Contact Us" ng-init="initialize()" ng-controller="contactController as controller">
+<ion-nav-buttons side="right">
+</ion-nav-buttons>
+  <ion-content>      
+      <section id="content" class="list card">
+        <div class="item item-text-wrap item-icon-left">
+          <i class="icon ion-ios-people"></i>
+          <span class="profilLabel">TruckDeal</span>
+        </div>
+        <div class="item item-text-wrap item-icon-left" ng-click="CallNumber()">
+          <i class="icon ion-ios-telephone"></i>
+          <span class="profilLabel">Mobile Number:</span>
+          <span>{{contact.mobile_number}} </span>
+        </div>
+        <div class="item item-text-wrap item-icon-left" ng-click="sendFeedback()">
+          <i class="icon ion-email"></i>
+          <span class="profilLabel">E-mail:</span>
+          <span>{{contact.email}}</span>
+        </div>
+        </div>
+        <label class="item item-input">
+          <textarea placeholder="Enter Feedback" ng-model="contact.feedback" id="feedback" rows="6" cols="20" style="width: 100%"></textarea>
+        </label>
+        </div>
+      </section>
+    <div class="padding">
+      <button class="button button-block button-royal" ng-click="sendFeedback()">
+        Submit
+      </button>
+    </div>
+  </ion-content>
+</ion-view>

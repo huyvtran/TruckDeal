@@ -2667,10 +2667,12 @@ $scope.$on('$ionicView.enter', function(ev) {
         if(loginprof == 1)
             {
               //console.log("Logged as customer");
+              $scope.title="Create Shippment";
               return true;
             }
           else if (loginprof == 2){
               //console.log("Logged as driver");
+              $scope.title="Create Trip";
               return false;
             }
       };
@@ -2867,19 +2869,29 @@ $scope.$on('$ionicView.enter', function(ev) {
 
       driver_trip_list = [];
       driver_info = [];
-      for (i=0; i<driver_trip_info.length;i++){
+      $scope.innerloop_driver(0,driver_trip_info.length);
+    }
+
+  $scope.innerloop_driver = function(i,max){
+      //for (i=0; i<driver_trip_info.length;i++){
+      if(i<max){
           route_screen.get_driver_trip_list_match(driver_trip_info[i]).then(function(results){
                   driver_trip_list.push(results);
                   mobilenumber=results.get("driver_username");
                   //console.log(mobilenumber);
                   route_screen.get_driver_info_match(mobilenumber).then(function(results1){
                           driver_info.push(results1);
-                          $scope.build_driver_list_disp();
+                          i++;
+                          $scope.innerloop_driver(i,max);
                         });
                 });
-            };
+            }
+      else if(i==max && max>0){
+          $scope.build_driver_list_disp();
+        }
     $scope.modal.show();
   };
+
   $scope.closeModal = function() {
     $scope.modal.hide();
   };
@@ -2907,19 +2919,30 @@ $scope.$on('$ionicView.enter', function(ev) {
 
       cust_trip_list = [];
       cust_info = [];
-      for (i=0; i<cust_trip_info.length;i++){
+      $scope.innerloop_cust(0,cust_trip_info.length);
+    }
+
+  $scope.innerloop_cust = function(i,max){
+      //for (i=0; i<cust_trip_info.length;i++){
+      if(i<max){
           route_screen.get_cust_trip_list_match(cust_trip_info[i]).then(function(results){
                   cust_trip_list.push(results);
                   mobilenumber=results.get("customer_username");
                   //console.log(mobilenumber);
                   route_screen.get_cust_info_match(mobilenumber).then(function(results1){
+                          //console.log(results1.get("mobile_number"));
                           cust_info.push(results1);
-                          $scope.build_cust_list_disp();
+                          i++;
+                          $scope.innerloop_cust(i,max);
                         });
                 });
-            };
+            }
+      else if(i==max && max>0){
+          $scope.build_cust_list_disp();
+        }
       $scope.modal2.show();
   };
+
   $scope.closeModal2 = function() {
     $scope.modal2.hide();
   };
@@ -4467,6 +4490,12 @@ $scope.submit = function()
 
       var d = new Date();
       var curr_year = d.getFullYear();
+      if(driver_trip_info.get('picture')){
+          pict_temp = driver_trip_info.get('picture').url();
+        }
+        else{
+          pict_temp = "";
+        }
 
       $scope.driver={
           age: curr_year - driver_info.dob.getFullYear(),
@@ -4487,7 +4516,7 @@ $scope.submit = function()
           picture1: truck_info.picture1,
           picture2: truck_info.picture2,
           picture3: truck_info.picture3,
-          load_pic: driver_trip_info.picture,
+          load_pic: pict_temp,
           profile_pic: driver_info.picture,
           no_of_rating: driver_info.no_of_rating,
           no_of_comment: driver_info.no_of_comment,
@@ -5438,7 +5467,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
           source: cust_trip_info.get("source"),
           destination: cust_trip_info.get("destination"),
           pickdatetime: cust_trip_info.get("start_date_time"),
-          droptimedate: cust_trip_info.get("start_date_time"),
+          droptimedate: cust_trip_info.get("end_date_time"),
           status: cust_trip_info.get("status"),
           id:i,
           name: cust_info.first_name + " " + cust_info.last_name,
@@ -5864,6 +5893,62 @@ $scope.test_pusf_notif = function(deviceid,msg) {
 })
 
 //*************************** end of selectcustomerController ****************************
+
+//*************************** start of contactController ****************************
+.controller('contactController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen) {
+
+  var user_info;
+  var cust_trip_info;
+  $scope.$on('$ionicView.enter', function(ev) {
+    if(ev.targetScope !== $scope)
+        return;
+      //console.log("called initialize function");
+      initialize1();
+  });
+
+  function initialize1() {
+
+      $scope.contact={
+          mobile_number:"+91 9965158166",
+          email:"sendurr@hotmail.com"
+      };
+  }
+
+  $scope.CallNumber = function(){ 
+      window.plugins.CallNumber.callNumber(function(){
+      //success logic goes here
+      }, function(){
+      //error logic goes here
+      }, $scope.contact.mobile_number) 
+    };
+
+  $scope.sendFeedback= function() {
+        currentuser = Parse.User.current();
+        var signature = "\n\nThanks & Regards \nuser-"+currentuser.get("username");
+        var body = $scope.contact.feedback+signature;
+        if(window.plugins && window.plugins.emailComposer) {
+            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                console.log("Response -> " + result);
+            }, 
+            "Feedback for your TruckDeal", // Subject
+            body,                      // Body
+            ["sendurr@hotmail.com"],    // To
+            null,                    // CC
+            null,                    // BCC
+            false,                   // isHTML
+            null,                    // Attachments
+            null);                   // Attachment Data
+        }
+    }
+
+  $scope.initialize = function() 
+  {
+
+  };
+
+})
+
+//*************************** end of contactController ****************************
 
 //*************************** start of tab1Controller ****************************
 .controller('tab1Controller', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen) {

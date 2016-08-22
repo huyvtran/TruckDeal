@@ -44,6 +44,13 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     // set tabs position on the top
     $ionicConfigProvider.tabs.position('top');
     $stateProvider
+  // contact us screen
+  .state('contact', {
+    url: '/contact',
+      templateUrl: 'templates/contact.html',
+      controller: 'contactController'
+  })
+
   // Search for customer page
   .state('searchcustomer', {
     url: '/searchcustomer',
