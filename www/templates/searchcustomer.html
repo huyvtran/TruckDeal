@@ -9,7 +9,27 @@
         Oop's! We didn't find a match. </br>You can still post your trip using the <br>post trip option.
       </div>
     </div>
-          <ion-list >
+    <div class="row" style="height:auto;" id="summaryBanner">
+      <div class="col list card" >
+        <div class="item item-avatar">
+          <img src="{{driver.picture}}">
+          <h2>Trip Summary</h2>
+          <h3>From : {{driver.source}}</h3>
+          <h3>To : {{driver.destination}}</h3>
+          <h3>Truck : {{driver.truck}}</h3>
+          <h4>Pickup Time: {{driver.start_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
+          <h4>Drop Time: {{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="list card" ng-show="nomatch()">
+      <div class="item item-icon-left item-text-wrap">
+        <i class="icon ion-alert-circled"></i>
+        Oop's! We didn't find a match. </br>You can still post your trip using the <br>post trip option.
+      </div>
+    </div>
+   <div>
+          <ion-scroll>
             <ion-item class="item-remove-animate item-avatar item-icon-right item-divider" ng-repeat="customer in customers | orderBy: 'start_date_time'" type="item-text-wrap" ng-click="clickecustomer(customer.id)">
               <img ng-src="{{customer.picture}}">
               <h3>{{customer.source}}</h3>
@@ -21,10 +41,11 @@
                 <strong>Status : </strong>{{customer.status}}
               </p>
             </ion-item>
-          </ion-list>
+          </ion-scroll>
+    </div>
   </ion-content>
-<ion-footer-bar class="tabs tabs-assertive" style="height:auto;">
-      <div class="col list card">
+<!--<ion-footer-bar class="tabs tabs-assertive" style="height:auto;">
+      <div class="col list card" >
         <div class="item item-avatar">
           <img src="{{driver.picture}}">
           <h2>Trip Summary</h2>
@@ -35,6 +56,6 @@
           <h4>Drop Time: {{driver.end_date_time| date: "yyyy-MM-dd h:mm a"}}</h4>
         </div>
       </div>
-</ion-footer-bar>
+</ion-footer-bar>-->
 </ion-view>
 

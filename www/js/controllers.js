@@ -81,6 +81,8 @@ angular.module('starter.controllers', ['firebase'])
   $scope.logout = function()
   {
     Parse.User.logOut();
+    route_screen.clear_cust_trip_var();
+    route_screen.clear_driver_trip_var();
     route_screen.savelocal("","");
     $state.go('login');
     //$window.location.reload(true)
@@ -298,7 +300,15 @@ angular.module('starter.controllers', ['firebase'])
     var user = new Parse.User();
     user.set("username", newUser.mobilenumber.toString());
     user.set("password", newUser.password);
-    user.set("email", newUser.email);
+    if(newUser.email==""){
+        part1 = Math.floor(Math.random() * 2000);
+        part2 = Math.floor(Math.random() * 2000);
+        temp_email = part1+part2+"@truck__deal.com";
+      }
+    else{
+        temp_email = newUser.email;
+      }
+    user.set("email", temp_email);
 
     // other fields can be set just like with Parse.Object
     // user.set("phone", "");
@@ -348,6 +358,7 @@ angular.module('starter.controllers', ['firebase'])
       route_screen.set_login_prof(1);
       route_screen.get_cust_info(); 
       route_screen.savelocal("","");
+      $scope.initpush();
       $state.go('tab.location');
 	    },
     error:function(error){
@@ -384,6 +395,7 @@ angular.module('starter.controllers', ['firebase'])
                 route_screen.set_login_prof(2);
                 route_screen.get_driver_info();
                 route_screen.savelocal("","");
+                $scope.initpush();
                 $state.go('tab.location');
                 },
             error:function(error){
@@ -991,7 +1003,13 @@ angular.module('starter.controllers', ['firebase'])
   function initialize1() {
     var currentuser = Parse.User.current();
     $scope.user=route_screen.return_cust_info();
-    $scope.user.email=currentuser.get("email");
+    if(currentuser.get("email").indexOf("@truck__deal.com") == -1){
+        temp_email=currentuser.get("email");
+      }
+    else{
+        temp_email="";
+      }
+    $scope.user.email=temp_email;
     //$scope.user.picture ="img/profile.jpg";
   }
 
@@ -1069,7 +1087,13 @@ angular.module('starter.controllers', ['firebase'])
   function initialize1() {
       var currentuser = Parse.User.current();
       $scope.user=route_screen.return_cust_info();
-      $scope.user.email=currentuser.get("email");
+    if(currentuser.get("email").indexOf("@truck__deal.com") == -1){
+        temp_email=currentuser.get("email");
+      }
+    else{
+        temp_email="";
+      }
+      $scope.user.email=temp_email;
   }
 
   $scope.initialize = function() 
@@ -1123,7 +1147,13 @@ angular.module('starter.controllers', ['firebase'])
   function initialize1() {
     var currentuser = Parse.User.current();
     $scope.user=route_screen.return_driver_info();
-    $scope.user.email=currentuser.get("email");
+    if(currentuser.get("email").indexOf("@truck__deal.com") == -1){
+        temp_email=currentuser.get("email");
+      }
+    else{
+        temp_email="";
+      }
+    $scope.user.email=temp_email;
     //$scope.user.picture ="img/profile.jpg";
   }
 
@@ -1561,7 +1591,13 @@ $scope.test_pusf_notif = function(deviceid,msg) {
   function initialize1() {
       var currentuser = Parse.User.current();
       $scope.user=route_screen.return_driver_info();
-      $scope.user.email=currentuser.get("email");
+    if(currentuser.get("email").indexOf("@truck__deal.com") == -1){
+        temp_email=currentuser.get("email");
+      }
+    else{
+        temp_email="";
+      }
+      $scope.user.email=temp_email;
   }
 
   $scope.initialize = function() 
@@ -2335,6 +2371,7 @@ $scope.test_pusf_notif = function(deviceid,msg) {
               results[0].save();
               var mobile_number = results[0].get("driver_username");
               route_screen.get_device_id_match(mobile_number).then(function(deviceid){
+                  //console.log(deviceid);
                   var msg = "Your Truck is approved.";
                   $scope.test_pusf_notif(deviceid,msg);
                 });
@@ -3463,6 +3500,8 @@ $scope.$on('$ionicView.enter', function(ev) {
 
   $scope.$on('$ionicView.enter', function() {
       //console.log("called initialize function");
+      $scope.drivers="";
+      console.log($scope.drivers);
       initialize1();
   });
 
@@ -3564,6 +3603,7 @@ $scope.$on('$ionicView.enter', function(ev) {
     };
 
   $scope.build_driver_list_disp = function(){
+      console.log("Entered build");
 
       $scope.nomatch = function() {
           if(driver_trip_info.length > 0)
@@ -3786,6 +3826,8 @@ $scope.submit = function()
     if(ev.targetScope !== $scope)
         return;
       //console.log("called initialize function");
+      $scope.customers="";
+      console.log($scope.customers);
       initialize1();
   });
 
@@ -4336,10 +4378,10 @@ $scope.submit = function()
   $scope.statusorder = function(trip)
   {
       if(trip.status == "Please Respond"){
-          return 0;
+          return 999;
       }
       if(trip.status == "Requested"){
-          return 1;
+          return 998;
       }
       else{
           return 2;
@@ -5295,10 +5337,10 @@ $scope.test_pusf_notif = function(deviceid,msg) {
   $scope.statusorder = function(trip)
   {
       if(trip.status == "Please Respond"){
-          return 0;
+          return 999;
       }
       if(trip.status == "Requested"){
-          return 1;
+          return 989;
       }
       else{
           return 2;
