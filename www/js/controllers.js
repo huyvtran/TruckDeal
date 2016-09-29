@@ -101,11 +101,12 @@ angular.module('starter.controllers', ['firebase'])
 
 //*************************** start of LoginCtrl ****************************
 
-.controller('LoginCtrl', function($scope, $ionicModal, $state, $rootScope, $ionicPopup, $timeout, route_screen,$cordovaCamera,$cordovaToast,$ionicPush) {
+.controller('LoginCtrl', function($scope, $ionicModal, $state, $rootScope, $ionicPopup, $timeout, route_screen,$cordovaCamera,$cordovaToast,$ionicPush,$cordovaGeolocation) {
 
   var self=this;
   var dl_file;
   var cust_info;
+  var curr_loc;
 
   $scope.$on('$ionicView.enter', function(ev) {
     if(ev.targetScope !== $scope)
@@ -115,6 +116,15 @@ angular.module('starter.controllers', ['firebase'])
   });
 
   function initialize1() {
+      var options = {timeout: 10000, enableHighAccuracy: true};
+      $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+        curr_loc="";
+          curr_loc ={
+            lat:position.coords.latitude, 
+            lng:position.coords.longitude
+          };
+          //console.log(curr_loc);
+      });
       $scope.currentUser ={
         mobilenumber: null,
         password:''
@@ -172,6 +182,20 @@ angular.module('starter.controllers', ['firebase'])
       success: function(user) {
         // Hooray! Let them use the app now.
         console.log(user.get("username"));
+        if(curr_loc){
+            route_screen.set_curr_loc(curr_loc);
+        }else{
+            var options = {timeout: 10000, enableHighAccuracy: true};
+            $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+              curr_loc="";
+              curr_loc ={
+                  lat:position.coords.latitude, 
+                  lng:position.coords.longitude
+                };
+                route_screen.set_curr_loc(curr_loc);
+                //console.log(curr_loc);
+             });
+          }
         if ($scope.ischecked){
             $scope.ischecked = false;
             $scope.signedin(currentUser);
@@ -354,6 +378,10 @@ angular.module('starter.controllers', ['firebase'])
       //console.log(p2.get("username"));
       p2.set("group","customer");
       p2.set("customer", obj);
+      if(curr_loc){
+          var point = new Parse.GeoPoint({latitude: Number(curr_loc.lat), longitude: Number(curr_loc.lng)});
+          p2.set("location",point);
+        }
       p2.save();
       route_screen.set_login_prof(1);
       route_screen.get_cust_info(); 
@@ -391,6 +419,10 @@ angular.module('starter.controllers', ['firebase'])
                 var p2 = Parse.User.current();
                 p2.set("group","driver");
                 p2.set("driver", obj);
+                if(curr_loc){
+                    var point = new Parse.GeoPoint({latitude: Number(curr_loc.lat), longitude: Number(curr_loc.lng)});
+                    p2.set("location",point);
+                  }
                 p2.save();
                 route_screen.set_login_prof(2);
                 route_screen.get_driver_info();
@@ -3488,7 +3520,7 @@ $scope.$on('$ionicView.enter', function(ev) {
 //*************************** end of drivergoodsdetailsController ****************************
 
 //*************************** start of searchdriverController ****************************
-.controller('searchdriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup) {
+.controller('searchdriverController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup,$http) {
 
   var cust_goods_info;
   var cust_trip_info;
@@ -3496,6 +3528,7 @@ $scope.$on('$ionicView.enter', function(ev) {
   var driver_trip_info=[], driver_trip_list=[],driver_info=[], driver_trip_gps=[];
   var mile = 50;
   var location;
+  var start_loc;
   var nomatch_temp;
 
   $scope.$on('$ionicView.enter', function() {
@@ -3693,6 +3726,7 @@ $scope.submit = function()
       var cust__trp_gps_class = Parse.Object.extend("Customer_trip_gps");
       tgps1= new cust__trp_gps_class();
       var point = new Parse.GeoPoint({latitude: Number(cust_all_detail[0].to_lat), longitude: Number(cust_all_detail[0].to_lng)});
+      start_loc ={lat:cust_all_detail[0].to_lat,lng:cust_all_detail[0].to_lng};
       tgps1.set("destination_coordinates",point);
       tgps1.save(null,{
       success:function(obj){
@@ -3789,6 +3823,11 @@ $scope.submit = function()
             tl1.save(null,{
                 success:function(obj){
                   console.log(obj.id);
+                  var point = new Parse.GeoPoint({latitude: Number(start_loc.lat), longitude: Number(start_loc.lng)});
+                  route_screen.get_user_match_loc("driver",point,mile).then(function(deviceid){
+                      var msg = "A customer is available near you.";
+                      $scope.test_pusf_notif(deviceid,msg);
+                    });
                   $ionicPopup.alert({
                       title: 'Posted - Great!',
                       content: 'You will be contacted soon by an interested driver.'
@@ -3807,12 +3846,27 @@ $scope.submit = function()
      });
   };
 
+$scope.test_pusf_notif = function(results,msg) {
+      for(i=0; i<results.length;i++){
+          var deviceid = results[i].get("deviceid");
+          var req = route_screen.test_pusf_notif(deviceid,msg);
+          // Make the API call
+          $http(req).success(function(resp){
+            // Handle success
+            console.log("Ionic Push: Push success");
+          }).error(function(error){
+            // Handle error 
+            console.log("Ionic Push: Push error");
+          });
+      }
+   };
+
 })
 
 //*************************** end of searchdriverController ****************************
 
 //*************************** start of searchcustomerController ****************************
-.controller('searchcustomerController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup) {
+.controller('searchcustomerController', function($state, $scope, $ionicLoading, $compile, $rootScope,route_screen,$ionicPopup,$http) {
 
   var driver_info;
   var driver_trip_info;
@@ -3821,6 +3875,7 @@ $scope.submit = function()
   var cust_trip_info=[], cust_trip_list=[],cust_info=[], cust_trip_gps=[];
   var mile = 50;
   var location;
+  var start_loc;
   var nomatch_temp;
   $scope.$on('$ionicView.enter', function(ev) {
     if(ev.targetScope !== $scope)
@@ -4014,6 +4069,7 @@ $scope.submit = function()
       var driver_trp_gps_class = Parse.Object.extend("Driver_trip_gps");
       tgps1= new driver_trp_gps_class();
       var point = new Parse.GeoPoint({latitude: Number(driver_all_detail[0].to_lat), longitude: Number(driver_all_detail[0].to_lng)});
+      start_loc ={lat:driver_all_detail[0].to_lat,lng:driver_all_detail[0].to_lng};
       tgps1.set("destination_coordinates",point);
       tgps1.save(null,{
       success:function(obj){
@@ -4109,6 +4165,12 @@ $scope.submit = function()
             tl1.save(null,{
                 success:function(obj){
                   console.log(obj.id);
+                  var point = new Parse.GeoPoint({latitude: Number(start_loc.lat), longitude: Number(start_loc.lng)});
+                  route_screen.get_user_match_loc("customer",point,mile).then(function(results){
+                      //console.log(results);
+                      var msg = "A trucker is available near you.";
+                      $scope.test_pusf_notif(results,msg);
+                    });
                   $ionicPopup.alert({
                       title: 'Posted - Great!',
                       content: 'You will be contacted soon by an interested customer.'
@@ -4126,6 +4188,21 @@ $scope.submit = function()
         }
      });
   };
+
+$scope.test_pusf_notif = function(results,msg) {
+      for(i=0; i<results.length;i++){
+          var deviceid = results[i].get("deviceid");
+          var req = route_screen.test_pusf_notif(deviceid,msg);
+          // Make the API call
+          $http(req).success(function(resp){
+            // Handle success
+            console.log("Ionic Push: Push success");
+          }).error(function(error){
+            // Handle error 
+            console.log("Ionic Push: Push error");
+          });
+      }
+   };
 
 
   $scope.initialize = function() 

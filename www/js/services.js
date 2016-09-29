@@ -76,6 +76,7 @@ angular.module('starter.services', [])
   }];
 
 	var deviceid; // This holds the device id for push notification.
+	var curr_loc; // This hold the cordinates of current location of user.
 	var page_flag;// page_flag = 0 past page as signup;
 	var loginprof=1; // loginprof = 1 logined as customer , loginprof = 2 logined as driver , loginprof = 3 logined as admin
 	var currentuser , currentcustomer, location;
@@ -161,6 +162,40 @@ angular.module('starter.services', [])
 
 		    get_device_id: function() {
 		    	return deviceid;
+		    },
+
+		    set_curr_loc: function(loc) {
+		    	curr_loc = loc;
+		      	currentuser = Parse.User.current();
+			    if(curr_loc){
+			        var point = new Parse.GeoPoint({latitude: Number(curr_loc.lat), longitude: Number(curr_loc.lng)});
+			        currentuser.set("location",point);
+			        currentuser.save();
+			    }
+		    },
+
+		    get_curr_loc: function() {
+		    	return curr_loc;
+		    },
+
+		    get_user_match_loc: function(group,loc,mile) { 
+			    // define the function as a promise function
+			    var deferred = $q.defer();
+				var user_info_class = Parse.Object.extend("User");
+			    var query = new Parse.Query(user_info_class);
+			    query.equalTo("group", group);
+			    query.withinMiles("location", loc, mile);
+			    query.find({
+			        success: function(results) {
+			        	//console.log(results);
+	                	deferred.resolve(results);    
+			        },
+			        error: function(object, error) {
+			          console.log(" The object was not retrieved successfully.");
+			          deferred.reject();
+			        }
+			     });
+			    return deferred.promise;
 		    },
 
 		    set_login_prof: function(prof) {
